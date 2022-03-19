@@ -13,7 +13,9 @@ int	main(void){
 	cout << vec.max_size() << endl;
 	cout << boolalpha << vec.empty() << endl;
 	vec.reserve(35);
-	vec.resize(99999999999);
+	vec.assign(10, 22);
+	vec.pop_back();
+	// vec.resize(99999999999);
 
 	cout << endl;
 
@@ -22,7 +24,9 @@ int	main(void){
 	cout << vec.max_size() << endl;
 	cout << boolalpha << vec.empty() << endl;
 
-	cout << endl;
+	for (size_t i(0); i < vec.size(); i++)
+		cout << vec[i] << endl;
 
+	cout << endl;
 
 }

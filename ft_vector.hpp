@@ -14,6 +14,8 @@ template<typename T, class Alloc = std::allocator<T> >
 class vector
 {
 	public:
+
+		#pragma region (constructor)
 		explicit vector(const allocator_type& tmp = allocator_type()){
 			allocator_type&	alloc = const_cast<allocator_type &>(tmp);
 			_arr = alloc.allocate(0);
@@ -40,39 +42,40 @@ class vector
 				return;
 			}
 
-		virtual	~vector(void){
-			allocator_type	alloc;
-			for (size_t i(0); i < this->size(); i++)
-				alloc.destroy(&_arr[i]);
-			alloc.deallocate(_arr, this->capacity());
-
-			return;
-		}
-
 		vector(vector<T> const & cpy) : _size(cpy.size()), _capacity(cpy.capacity()){
-			allocator_type	alloc;
-			_arr = alloc.allocate(cpy.capacity());
+			_arr = defal.allocate(cpy.capacity());
 			for (size_t i(0); i < this->capacity(); i++)
 			{
 				if (i < this->size())
-					alloc.construct(&_arr[i], cpy[i]);
+					defal.construct(&_arr[i], cpy[i]);
 				else if (i >= this->size())
 					_arr[i] = reinterpret_cast<value_type>(0);
 			}
 
 			return;
 		}
+		#pragma endregion
 
+		#pragma region (destructor)
+		virtual	~vector(void){
+			for (size_t i(0); i < this->size(); i++)
+				defal.destroy(&_arr[i]);
+			defal.deallocate(_arr, this->capacity());
+
+			return;
+		}
+		#pragma endregion
+
+		#pragma region operator=
 		vector & operator=(vector<T> const & asn){
-			allocator_type	alloc;
 			_size = asn.size();
 			_capacity = asn.capacity();
-			_arr = alloc.allocate(asn.capacity());
+			_arr = defal.allocate(asn.capacity());
 			for (size_t i(0); i < this->capacity(); i++)
 			{
 				if (i < this->size())
 				{
-					alloc.destroy(&_arr[i]);
+					defal.destroy(&_arr[i]);
 					_arr[i] = asn[i];
 				}
 				else if (i >= this->size())
@@ -81,19 +84,104 @@ class vector
 
 			return *this;
 		}
+		#pragma endregion
 
+		#pragma region Capacity
 		size_t	size(void) const{
 			return this->_size;
-		}
-
-		size_t	capacity(void) const{
-			return this->_capacity;
 		}
 
 		size_t	max_size(void) const{
 			return this->_max_size;
 		}
 
+		void	resize(size_t n, value_type val = value_type()){
+			if (n <= this->size())
+			{
+				if (n == this->size())
+					return;
+				for (size_t i(n); i < this->size(); i++)
+					_arr[i] = reinterpret_cast<value_type>(0);
+				this->_size = n;
+			}
+			else if (n > this->size() && n <= this->capacity())
+			{
+				for (size_t i(this->size()); i < this->capacity(); i++)
+					_arr[i] = val;
+				this->_size = n;
+			}
+			else if (n > this->capacity() && n <= this->max_size())
+			{
+				value_type	*swap;
+				size_t		new_capacity;
+
+				new_capacity = n * 2;
+				if (n * 2 > this->max_size())
+					new_capacity = this->max_size();
+				swap = defal.allocate(new_capacity, this->_arr);
+				for (size_t i(0); i < new_capacity; i++)
+				{
+					if (i < this->size())
+					{
+						swap[i] = _arr[i];
+						defal.destroy(&_arr[i]);
+					}
+					else if (i >= this->size() && i < n)
+						swap[i] = val;
+					else if (i >= n && i < this->capacity())
+						continue;
+					else if (i >= this->capacity())
+						swap[i] = reinterpret_cast<value_type>(0);
+				}
+				defal.deallocate(_arr, this->capacity());
+				this->_size = n;
+				this->_capacity = new_capacity;
+				this->_arr = swap;
+			}
+			else if (n > this->max_size())
+				throw std::length_error("size exceeds maximum value");
+
+			return;
+		}
+
+		size_t	capacity(void) const{
+			return this->_capacity;
+		}
+
+		bool	empty(void) const{
+			return !this->size();
+		}
+
+		void	reserve(size_t n){
+			if (n <= this->capacity())
+				return;
+			else if (n > this->max_size())
+				throw std::length_error("capacity exceeds maximum value");
+			else if (n > this->capacity() && n <= this->max_size())
+			{
+				value_type	*swap;
+
+				swap = defal.allocate(n, this->_arr);
+				for (size_t i(0); i < this->capacity(); i++)
+				{
+					if (i < this->size())
+					{
+						swap[i] = _arr[i];
+						defal.destroy(&_arr[i]);
+					}
+					else if (i >= this->size())
+						swap[i] = reinterpret_cast<value_type>(0);
+				}
+				defal.deallocate(_arr, this->capacity());
+				this->_capacity = n;
+				this->_arr = swap;
+			}
+
+			return;
+		}
+		#pragma endregion
+
+		#pragma region Element access
 		value_type &	operator[](size_t n){
 			return _arr[n];	
 		}
@@ -116,110 +204,78 @@ class vector
 			return _arr[n];
 		}
 
-		value_type &	front(size_t n){
+		value_type &	front(){
 			return _arr[0];	
 		}
 
-		value_type const &	front(size_t n) const{
+		value_type const &	front() const{
 			return _arr[0];	
 		}
 
-		value_type &	back(size_t n){
+		value_type &	back(){
 			return _arr[this->size() - 1];	
 		}
 
-		value_type const &	back(size_t n) const{
+		value_type const &	back() const{
 			return _arr[this->size() - 1];	
 		}
+		#pragma endregion
 
-		bool	empty(void) const{
-			return !this->size();
-		}
+		#pragma region Modifiers
+		void	assign(size_t n, const value_type& val){
+				size_t	old_size(this->size());
 
-		void	reserve(size_t n){
-			if (n <= this->capacity())
+				this->resize(n, val);
+				for (size_t i(0); i < old_size; i++)
+				{
+					defal.destroy(&_arr[i]);
+					defal.construct(&_arr[i], val);
+				}
+
 				return;
-			else if (n > this->max_size())
-				throw std::length_error("capacity exceeds maximum value");
-			else if (n > this->capacity() && n <= this->max_size())
-			{
-				allocator_type	alloc;
-				value_type	*swap;
-
-				swap = alloc.allocate(n, this->_arr);
-				for (size_t i(0); i < this->capacity(); i++)
-				{
-					if (i < this->size())
-					{
-						swap[i] = _arr[i];
-						alloc.destroy(&_arr[i]);
-					}
-					else if (i >= this->size())
-						swap[i] = reinterpret_cast<value_type>(0);
-				}
-				alloc.deallocate(_arr, this->capacity());
-				this->_capacity = n;
-				this->_arr = swap;
 			}
+		
+		void	push_back(const value_type& val){
+			this->resize(this->size() + 1, val);
 
 			return;
 		}
 
-		void	resize(size_t n, value_type val = value_type()){
-			if (n <= this->size())
-			{
-				if (n == this->size())
-					return;
-				for (size_t i(n); i < this->size(); i++)
-					_arr[i] = reinterpret_cast<value_type>(0);
-				this->_size = n;
-			}
-			else if (n > this->size() && n <= this->capacity())
-			{
-				for (size_t i(this->size()); i < this->capacity(); i++)
-					_arr[i] = val;
-				this->_size = n;
-			}
-			else if (n > this->capacity() && n <= this->max_size())
-			{
-				allocator_type	alloc;
-				value_type	*swap;
-				size_t		new_capacity;
-
-				new_capacity = n * 2;
-				if (n * 2 > this->max_size())
-					new_capacity = this->max_size();
-				swap = alloc.allocate(new_capacity, this->_arr);
-				for (size_t i(0); i < new_capacity; i++)
-				{
-					if (i < this->size())
-					{
-						swap[i] = _arr[i];
-						alloc.destroy(&_arr[i]);
-					}
-					else if (i >= this->size() && i < n)
-						swap[i] = val;
-					else if (i >= n && i < this->capacity())
-						continue;
-					else if (i >= this->capacity())
-						swap[i] = reinterpret_cast<value_type>(0);
-				}
-				alloc.deallocate(_arr, this->capacity());
-				this->_size = n;
-				this->_capacity = new_capacity;
-				this->_arr = swap;
-			}
-			else if (n > this->max_size())
-				throw std::length_error("size exceeds maximum value");
+		void	pop_back(void){
+			this->resize(this->size() - 1);
 
 			return;
 		}
 
+		void	swap(vector& x){
+			size_t		tmp_size(x.size());
+			size_t		tmp_cap(x.capacity());
+			value_type	*tmp_arr(x._arr);
+
+			x._size = this->size();
+			x._capacity = this->capacity();
+			x._arr = this->_arr;
+
+			this->_size = tmp_size;
+			this->_capacity = tmp_cap;
+			this->_arr = tmp_arr;
+
+			return;
+		}
+		#pragma endregion
+
+		#pragma region Allocator
+		allocator_type	get_allocator() const{
+			return this->defal;
+		}
+		#pragma endregion
+		
 	protected:
 		// protected vars
-		value_type	*_arr;
-		size_t		_size;
-		size_t		_capacity;
+		value_type		*_arr;
+		size_t			_size;
+		size_t			_capacity;
+		allocator_type	defal;
 		
 		// static const
 		static const size_t	_max_size = 536870912;
