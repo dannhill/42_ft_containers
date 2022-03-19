@@ -1,8 +1,8 @@
-NAME	:=	ft_containers
+NAME	=	ft_containers
 
-SRCS	:=	$(wildcard ./*.cpp)
+SRCS	:=	$(wildcard *.cpp)
 
-INCL	:=	$(wildcard ./*.hpp)
+INCL	:=	$(wildcard *.hpp)
 
 OBJS	:=	$(SRCS:.cpp=.o)
 
@@ -14,18 +14,25 @@ RM		:=	rm -rf
 
 all:	$(NAME)
 
+debug:	fclean apnd $(NAME)
+
 $(NAME):	$(OBJS) $(INCL)
 		$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
-%.o:%.c
-		$(CC) $(CFLAGS) -c $@ -o $<
+%.o:%.cpp
+		$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 		$(RM) $(OBJS)
 
 fclean:	clean
 		$(RM) $(NAME)
+		@$(RM) $(NAME)_DEBUG
 
 re:	fclean all
 
-.PHONY: all, clean, fclean, re
+apnd:
+		$(eval CFLAGS += -ggdb3)
+		$(eval NAME = ft_containers_DEBUG)
+
+.PHONY: all, debug, clean, fclean, re, apnd
