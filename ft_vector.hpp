@@ -95,17 +95,41 @@ class vector
 		}
 
 		value_type &	operator[](size_t n){
+			return _arr[n];	
+		}
+
+		value_type const &	operator[](size_t n) const{
+			return _arr[n];
+		}
+
+		value_type &	at(size_t n){
 			if (n >= this->size())
 				throw std::out_of_range(this->what_of_range);
 
 			return _arr[n];	
 		}
 
-		value_type const &	operator[](size_t n) const{
+		value_type const &	at(size_t n) const{
 			if (n >= this->size())
 				throw std::out_of_range(this->what_of_range);
 
 			return _arr[n];
+		}
+
+		value_type &	front(size_t n){
+			return _arr[0];	
+		}
+
+		value_type const &	front(size_t n) const{
+			return _arr[0];	
+		}
+
+		value_type &	back(size_t n){
+			return _arr[this->size() - 1];	
+		}
+
+		value_type const &	back(size_t n) const{
+			return _arr[this->size() - 1];	
 		}
 
 		bool	empty(void) const{
