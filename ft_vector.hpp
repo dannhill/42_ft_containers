@@ -1,8 +1,9 @@
 #pragma once
 #include <memory>
-#include <cstdio> //library used only to define "size_t"
+#include <cstdio> // library used only to define "size_t"
 #include <stdexcept>
 #include <string>
+#include <iterator> // library used only for base iterator
 
 namespace ft
 {
@@ -83,6 +84,14 @@ class vector
 			}
 
 			return *this;
+		}
+		#pragma endregion
+
+		#pragma region Iterators
+		std::iterator	begin(void){
+			return std::iterator<std::random_access_iterator_tag, value_type>(
+				
+			)
 		}
 		#pragma endregion
 
