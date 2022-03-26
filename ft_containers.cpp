@@ -15,6 +15,8 @@ int	main(void){
 	vec.reserve(35);
 	vec.assign(10, 22);
 	vec.pop_back();
+	vec.begin();
+	vec.end();
 	// vec.resize(99999999999);
 
 	cout << endl;

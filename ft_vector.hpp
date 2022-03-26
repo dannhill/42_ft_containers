@@ -3,7 +3,7 @@
 #include <cstdio> // library used only to define "size_t"
 #include <stdexcept>
 #include <string>
-#include <iterator> // library used only for base iterator
+#include "ft_iterator.hpp"
 
 namespace ft
 {
@@ -88,10 +88,24 @@ class vector
 		#pragma endregion
 
 		#pragma region Iterators
-		std::iterator	begin(void){
-			return std::iterator<std::random_access_iterator_tag, value_type>(
-				
-			)
+
+		typedef ft::iterator<value_type> 			iterator;
+		typedef	ft::reverse_iterator<value_type>	reverse_iterator;
+		
+		iterator	begin(void){
+			iterator	ret;
+
+			ret += reinterpret_cast<difference_type>(_arr);
+
+			return ret;
+		}
+
+		iterator	end(void){
+			iterator ret;
+
+			ret += reinterpret_cast<difference_type>(_arr + _size);
+
+			return ret;
 		}
 		#pragma endregion
 
@@ -281,10 +295,10 @@ class vector
 		
 	protected:
 		// protected vars
-		value_type		*_arr;
-		size_t			_size;
-		size_t			_capacity;
-		allocator_type	defal;
+		value_type				*_arr;
+		size_t					_size;
+		size_t					_capacity;
+		allocator_type			defal;
 		
 		// static const
 		static const size_t	_max_size = 536870912;
