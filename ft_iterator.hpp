@@ -55,6 +55,10 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return *(this->p);
 		}
 
+		virtual value_type *	operator->(void) const{ // to substitute with pointer keyword
+			return &(operator*());
+		}
+
 		// BOH
 		// value_type *	operator->(void){
 		// 	return this->p;
@@ -160,6 +164,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 };
 #pragma endregion
 
+#pragma region Reverse Iterator
 template<typename T>
 class	reverse_iterator : public iterator<T>{
 	public:
@@ -172,11 +177,15 @@ class	reverse_iterator : public iterator<T>{
 		}
 
 		iterator<value_type> &	base(void) const{
-			return static_cast<iterator<value_type> >((*this) - 1);
+			return static_cast<iterator<value_type> >(*this);
 		}
 
-		reverse_iterator<value_type> const &	operator+(difference_type n) const{
-			return this->iterator<value_type>::operator+(n);
+		reverse_iterator	operator+(difference_type n) const{
+			reverse_iterator	tmp(*this);
+
+			tmp.p -= n;
+
+			return tmp;
 		}
 
 		reverse_iterator &	operator++(void){
@@ -186,11 +195,51 @@ class	reverse_iterator : public iterator<T>{
 		reverse_iterator	operator++(int){
 			reverse_iterator	tmp(*this);
 
-			(*this)++;
+			(this->p)--;
 
 			return temp;
 		}
+
+		reverse_iterator &	operator+=(difference_type n){
+			this->p -= n;
+
+			return *this;
+		}
+
+		reverse_iterator	operator-(difference_type n) const{
+			reverse_iterator	tmp(*this);
+
+			tmp.p += n;
+
+			return tmp;
+		}
+
+		reverse_iterator &	operator--(void){
+			return ++(this->p);
+		}
+
+		reverse_iterator	operator--(int){
+			reverse_iterator	tmp(*this);
+
+			(this->p)++;
+
+			return temp;
+		}
+
+		reverse_iterator &	operator-=(difference_type n){
+			this->p += n;
+
+			return *this;
+		}
+
+		value_type &	operator[](difference_type n) const{
+			this->base() -= n - 1;
+
+			return (*this);
+		}
 };
+
+
 
 // #ifndef __APPLE__
 // # undef value_type
@@ -198,5 +247,7 @@ class	reverse_iterator : public iterator<T>{
 // # undef pointer
 // # undef reference
 // #endif
+
+#pragma endregion
 
 }
