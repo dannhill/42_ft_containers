@@ -431,4 +431,59 @@ class vector
 template<typename T, class Alloc>
 const std::string vector<T, Alloc>::what_of_range("vector size exceeded");
 
+template <class T, class Alloc>
+void swap(vector<T,Alloc>& x, vector<T,Alloc>& y){
+	x.swap(y);
+
+	return;
+}
+
+template <class T, class Alloc>
+bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+	size_t sz(lhs.size());
+	if (sz != rhs.size())
+		return false;
+	
+	for (size_t i(0); i < sz; i++)
+		if (lhs[i] != rhs[i])
+			return false;
+
+	return true;
+}
+
+template <class T, class Alloc>
+bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+	return !(lhs == rhs);
+}
+
+template <class T, class Alloc>
+bool operator<(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+	size_t	sz = lhs.size() < rhs.size() ? lhs.size() : rhs.size();
+
+	for (size_t i(0); i < sz; i++)
+	{
+		if (lhs[i] < rhs[i])
+			return true;
+		else if (lhs[i] > rhs[i])
+			return false;
+	}
+
+	return lhs.size() < rhs.size() ? true : false;
+}
+
+template <class T, class Alloc>
+bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+	return !(rhs < lhs);
+}
+
+template <class T, class Alloc>
+bool operator>(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+	return (rhs < lhs);
+}
+
+template <class T, class Alloc>
+bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+	return !(lhs < rhs);
+}
+
 }

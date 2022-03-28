@@ -17,10 +17,14 @@ int	main(void){
 
 	gianni.assign(begin, end);
 
-	gianni.erase(gianni.begin() + 3);
-
 	for (size_t i(0); i < gianni.size(); i++)
 		cout << gianni[i] << endl;
+
+	// gianni.pop_back();
+
+	cout << endl;
+
+	cout << boolalpha << (vec == gianni) << endl;
 
 	return 0;
 }
