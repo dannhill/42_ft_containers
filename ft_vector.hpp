@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <cstdio> // library used only to define "size_t"
+#include <iostream> // library used only to debug printing
 #include <stdexcept>
 #include <string>
 #include "ft_iterator.hpp"
@@ -28,20 +29,37 @@ class vector
 
 		explicit vector(size_t n, const value_type& val = value_type(),
 			const allocator_type& tmp = allocator_type()){
-				allocator_type&	alloc = const_cast<allocator_type &>(tmp);
-				_arr = alloc.allocate(n * 2);
-				_size = n;
-				_capacity = n * 2;
-				for (size_t i(0); i < this->capacity(); i++)
-				{
-					if (i < this->size())
-						alloc.construct(&_arr[i], val);
-					else if (i >= this->size())
-						_arr[i] = reinterpret_cast<value_type>(0);
-				}
-
-				return;
+			allocator_type&	alloc = const_cast<allocator_type &>(tmp);
+			_arr = alloc.allocate(n * 2);
+			_size = n;
+			_capacity = n * 2;
+			for (size_t i(0); i < this->capacity(); i++)
+			{
+				if (i < this->size())
+					alloc.construct(&_arr[i], val);
+				else if (i >= this->size())
+					_arr[i] = reinterpret_cast<value_type>(0);
 			}
+
+			return;
+		}
+
+		template <class InputIterator>
+    	vector (InputIterator first, InputIterator last,
+        	const allocator_type& tmp = allocator_type()){
+			allocator_type&	alloc = const_cast<allocator_type &>(tmp);
+			_size = last - first;
+			_arr = alloc.allocate(_size * 2);
+			_capacity = _size * 2;
+			for (size_t i(0); i < this->capacity(); i++)
+			{
+				if (i < this->size())
+					alloc.construct(&_arr[i], first[i]);
+				else if (i >= this->size())
+					_arr[i] = reinterpret_cast<value_type>(0);
+			}
+			
+		}
 
 		vector(vector<T> const & cpy) : _size(cpy.size()), _capacity(cpy.capacity()){
 			_arr = defal.allocate(cpy.capacity());
@@ -95,7 +113,7 @@ class vector
 		iterator	begin(void){
 			iterator	ret;
 
-			ret += reinterpret_cast<difference_type>(_arr);
+			ret += reinterpret_cast<difference_type>(this->_arr) / sizeof(value_type);
 
 			return ret;
 		}
@@ -103,7 +121,23 @@ class vector
 		iterator	end(void){
 			iterator ret;
 
-			ret += reinterpret_cast<difference_type>(_arr + _size);
+			ret += reinterpret_cast<difference_type>(this->_arr + this->_size) / sizeof(value_type);
+
+			return ret;
+		}
+
+		reverse_iterator	rbegin(void){
+			reverse_iterator	ret;
+
+			ret -= reinterpret_cast<difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
+
+			return ret;
+		}
+
+		reverse_iterator	rend(void){
+			reverse_iterator	ret;
+
+			ret -= reinterpret_cast<difference_type>(this->_arr - 1) / sizeof(value_type);
 
 			return ret;
 		}
@@ -124,7 +158,8 @@ class vector
 				if (n == this->size())
 					return;
 				for (size_t i(n); i < this->size(); i++)
-					_arr[i] = reinterpret_cast<value_type>(0);
+					defal.destroy(&_arr[i]);
+					// _arr[i] = reinterpret_cast<value_type>(0);
 				this->_size = n;
 			}
 			else if (n > this->size() && n <= this->capacity())
@@ -245,18 +280,32 @@ class vector
 		#pragma endregion
 
 		#pragma region Modifiers
-		void	assign(size_t n, const value_type& val){
-				size_t	old_size(this->size());
+		template <class InputIterator>
+		void	assign(InputIterator first, InputIterator last){
+			size_t	sz(last - first);
 
-				this->resize(n, val);
-				for (size_t i(0); i < old_size; i++)
-				{
-					defal.destroy(&_arr[i]);
-					defal.construct(&_arr[i], val);
-				}
-
-				return;
+			this->resize(last - first);
+			for (size_t i(0); i < sz; i++)
+			{
+				defal.destroy(&_arr[i]);
+				defal.construct(&_arr[i], first[i]);
 			}
+
+			return;
+		}
+		
+		void	assign(size_t n, const value_type& val){
+			size_t	old_size(this->size());
+
+			this->resize(n, val);
+			for (size_t i(0); i < old_size; i++)
+			{
+				defal.destroy(&_arr[i]);
+				defal.construct(&_arr[i], val);
+			}
+
+			return;
+		}
 		
 		void	push_back(const value_type& val){
 			this->resize(this->size() + 1, val);
@@ -268,6 +317,69 @@ class vector
 			this->resize(this->size() - 1);
 
 			return;
+		}
+
+		iterator insert (iterator position, const value_type& val){
+			size_t	offset(position - this->begin());
+			size_t	sz(this->size());
+
+			this->push_back((*this)[sz - 1]);
+			for (size_t i(sz - 1); i > offset; i--)
+				(*this)[i] = (*this)[i - 1];
+			(*this)[offset] = val;
+
+			return this->begin() + offset;
+		}
+
+		void insert (iterator position, size_t n, const value_type& val){
+			size_t	offset(position - this->begin());
+			size_t	sz(this->size());
+
+			this->resize(sz + n, (*this)[sz - 1]);
+			for (size_t i(sz + n - 2); i > offset; i--)
+				(*this)[i] = (*this)[i - n];
+			for (size_t i(offset); i < offset + n; i++)
+				(*this)[i] = val;
+			
+			return;
+		}
+
+		template <class InputIterator>
+			void insert (iterator position, InputIterator first, InputIterator last){
+			size_t	offset(position - this->begin());
+			size_t	range(last - first);
+			size_t	sz(this->size());
+
+			this->resize(sz + range, (*this)[sz - 1]);
+			for (size_t i(sz + range - 2); i > offset; i--)
+				(*this)[i] = (*this)[i - range];
+			for (size_t i(offset), j(0); i < offset + range; i++, j++)
+				(*this)[i] = first[j];
+			
+			return;
+		}
+
+		iterator erase(iterator position){
+			size_t	offset(position - this->begin());
+			size_t	sz(this->size());
+
+			for (size_t i(offset); i < sz - 1; i++)
+				(*this)[i] = (*this)[i + 1];
+			this->pop_back();
+
+			return this->begin() + offset;
+		}
+
+		iterator erase(iterator first, iterator last){
+			size_t	offset(first - this->begin());
+			size_t	range(last - first);
+			size_t	sz(this->size());
+
+			for (size_t i(offset); i < sz - range; i++)
+				(*this)[i] = (*this)[i + range];
+			this->resize(sz - range);
+
+			return this->begin() + offset;
 		}
 
 		void	swap(vector& x){
@@ -282,6 +394,16 @@ class vector
 			this->_size = tmp_size;
 			this->_capacity = tmp_cap;
 			this->_arr = tmp_arr;
+
+			return;
+		}
+
+		void clear(void){
+			size_t	cp(this->capacity());
+
+			for (size_t i(0); i < cp; i++)
+				defal.destroy(&_arr[i]);
+			this->_size = 0;
 
 			return;
 		}

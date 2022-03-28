@@ -1,6 +1,7 @@
 #pragma once
 #include <iterator>// library used only for base iterator
 #include <cstddef>// library used only to include ptrdiff_t
+#include <iostream>// library used only to print debug
 
 namespace ft
 {
@@ -9,8 +10,6 @@ namespace ft
 #ifndef __APPLE__
 # define value_type T
 # define difference_type ptrdiff_t
-// # define pointer value_type*
-// # define reference value_type&
 #endif
 
 #pragma region Random Access Iterator
@@ -47,11 +46,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return this->p != cmp.p;
 		}
 
-		virtual value_type &	operator*(void){
-			return *(this->p);
-		}
-
-		virtual value_type const &	operator*(void) const{
+		virtual value_type &	operator*(void) const{
 			return *(this->p);
 		}
 
@@ -68,7 +63,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		// 	return this->p;
 		// }
 
-		virtual iterator	operator++(int){
+		iterator	operator++(int){
 			iterator	tmp(*this);
 
 			(this->p)++;
@@ -76,13 +71,13 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return iterator(tmp);
 		}
 
-		virtual iterator &	operator++(void){
+		iterator &	operator++(void){
 			(this->p)++;
 
 			return (*this);
 		}
 
-		virtual iterator	operator--(int){
+		iterator	operator--(int){
 			iterator	tmp(*this);
 
 			(this->p)--;
@@ -90,7 +85,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return iterator(tmp);
 		}
 
-		virtual iterator &	operator--(void){
+		iterator &	operator--(void){
 			(this->p)--;
 
 			return (*this);
@@ -197,7 +192,7 @@ class	reverse_iterator : public iterator<T>{
 
 			(this->p)--;
 
-			return temp;
+			return tmp;
 		}
 
 		reverse_iterator &	operator+=(difference_type n){
@@ -223,7 +218,7 @@ class	reverse_iterator : public iterator<T>{
 
 			(this->p)++;
 
-			return temp;
+			return tmp;
 		}
 
 		reverse_iterator &	operator-=(difference_type n){
@@ -233,20 +228,41 @@ class	reverse_iterator : public iterator<T>{
 		}
 
 		value_type &	operator[](difference_type n) const{
-			this->base() -= n - 1;
+			this->base() -= n + 1;
 
 			return (*this);
 		}
 };
 
+#ifndef __APPLE__
+// # define value_type T
+# undef difference_type
+#endif
 
+template<typename T>
+reverse_iterator<T>	operator+(typename reverse_iterator<T>::difference_type n,
+	const reverse_iterator<T>& rev_it){
+	reverse_iterator<value_type>	tmp(rev_it);
+	
+	tmp.p -= n;
 
-// #ifndef __APPLE__
-// # undef value_type
-// # undef difference_type
-// # undef pointer
-// # undef reference
-// #endif
+	return tmp;
+}
+
+template<typename T>
+reverse_iterator<T>	operator-(typename reverse_iterator<T>::difference_type n,
+	const reverse_iterator<T>& rev_it){
+	reverse_iterator<value_type>	tmp(rev_it);
+	
+	tmp.p += n;
+
+	return tmp;
+}
+
+#ifndef __APPLE__
+// # define value_type T
+# define difference_type ptrdiff_t
+#endif
 
 #pragma endregion
 

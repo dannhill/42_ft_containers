@@ -6,29 +6,21 @@ using namespace std;
 
 int	main(void){
 	ft::vector<int>	vec(10);
-	ft::vector<int>	gianni(0);
 
-	cout << vec.capacity() << endl;
-	cout << vec.size() << endl;
-	cout << vec.max_size() << endl;
-	cout << boolalpha << vec.empty() << endl;
-	vec.reserve(35);
-	vec.assign(10, 22);
-	vec.pop_back();
-	vec.begin();
-	vec.end();
-	// vec.resize(99999999999);
+	for (size_t i(0); i < 10; i++)
+		vec[i] = (i + 1);
 
-	cout << endl;
+	ft::vector<int>::iterator	begin(vec.begin());
+	ft::vector<int>::iterator	end(vec.end());
 
-	cout << vec.capacity() << endl;
-	cout << vec.size() << endl;
-	cout << vec.max_size() << endl;
-	cout << boolalpha << vec.empty() << endl;
+	ft::vector<int>	gianni;
 
-	for (size_t i(0); i < vec.size(); i++)
-		cout << vec[i] << endl;
+	gianni.assign(begin, end);
 
-	cout << endl;
+	gianni.erase(gianni.begin() + 3);
 
+	for (size_t i(0); i < gianni.size(); i++)
+		cout << gianni[i] << endl;
+
+	return 0;
 }
