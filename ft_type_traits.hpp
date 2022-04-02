@@ -198,4 +198,14 @@ struct is_integral<unsigned long long int> : public integral_constant<bool, true
 
 #pragma endregion
 
+#pragma region enable_if
+template<bool Cond, class T = void> struct enable_if {};
+template<class T> struct enable_if<true, T> { typedef T type; };
+#pragma endregion
+
+#pragma region disable_if
+template<bool Cond, class T = void> struct disable_if {};
+template<class T> struct disable_if<false, T> { typedef T type; };
+#pragma endregion
+
 }

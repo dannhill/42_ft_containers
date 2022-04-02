@@ -43,6 +43,14 @@
 		"xlocinfo": "cpp",
 		"xlocnum": "cpp",
 		"xstddef": "cpp",
-		"xtr1common": "cpp"
+		"xtr1common": "cpp",
+		"deque": "cpp",
+		"map": "cpp",
+		"stack": "cpp",
+		"xtree": "cpp",
+		"list": "cpp",
+		"queue": "cpp",
+		"set": "cpp",
+		"algorithm": "cpp"
 	}
 }

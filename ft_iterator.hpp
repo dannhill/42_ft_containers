@@ -6,16 +6,17 @@
 namespace ft
 {
 
-// to delete later, after i figure out how does macos work
-#ifndef __APPLE__
-# define value_type T
-# define difference_type ptrdiff_t
-#endif
-
 #pragma region Random Access Iterator
 template<typename T>
 class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 	public:
+		using typename std::iterator<std::random_access_iterator_tag, T>::iterator_category;
+		using typename std::iterator<std::random_access_iterator_tag, T>::value_type;
+		using typename std::iterator<std::random_access_iterator_tag, T>::difference_type;
+		using typename std::iterator<std::random_access_iterator_tag, T>::pointer;
+		using typename std::iterator<std::random_access_iterator_tag, T>::reference;
+
+
 		iterator(void) : std::iterator<std::random_access_iterator_tag, value_type>(){
 			this->p = NULL;
 
@@ -91,7 +92,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return (*this);
 		}
 
-		virtual iterator	operator+(difference_type	add){
+		virtual iterator	operator+(difference_type	add) const{
 			iterator tmp;
 			
 			if (add < 0)
@@ -102,11 +103,11 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return tmp;
 		}
 
-		virtual difference_type	operator-(iterator const & sub){
+		virtual difference_type	operator-(iterator const & sub) const{
 			return this->p - sub.p;
 		}
 
-		virtual iterator	operator-(difference_type	sub){
+		virtual iterator	operator-(difference_type	sub) const{
 			iterator tmp;
 
 			if (sub < 0)
@@ -154,24 +155,39 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		virtual value_type &	operator[](difference_type n){
 			return *(this->p + n);
 		}
+
+		virtual const value_type &	operator[](difference_type n) const{
+			return *(this->p + n);
+		}
 	protected:
 		value_type	*p;
 };
+#pragma endregion
+
+#pragma region Const Iterator
+template<typename T>
+class const_iterator : public iterator<const T>{};
 #pragma endregion
 
 #pragma region Reverse Iterator
 template<typename T>
 class	reverse_iterator : public iterator<T>{
 	public:
-		reverse_iterator(void) : iterator<value_type>(){
+		using typename ft::iterator<T>::iterator_category;
+		using typename ft::iterator<T>::value_type;
+		using typename ft::iterator<T>::difference_type;
+		using typename ft::iterator<T>::pointer;
+		using typename ft::iterator<T>::reference;
+
+		reverse_iterator(void) : iterator<T>(){
 			return;
 		}
 
-		explicit	reverse_iterator(iterator<value_type> const & cpy) : iterator<value_type>(cpy){
+		explicit	reverse_iterator(iterator<T> const & cpy) : iterator<T>(cpy){
 			return;
 		}
 
-		iterator<value_type> &	base(void) const{
+		iterator<value_type>	base(void) const{
 			return static_cast<iterator<value_type> >(*this);
 		}
 
@@ -226,12 +242,6 @@ class	reverse_iterator : public iterator<T>{
 
 			return *this;
 		}
-
-		value_type &	operator[](difference_type n) const{
-			this->base() -= n + 1;
-
-			return (*this);
-		}
 };
 
 #ifndef __APPLE__
@@ -242,7 +252,7 @@ class	reverse_iterator : public iterator<T>{
 template<typename T>
 reverse_iterator<T>	operator+(typename reverse_iterator<T>::difference_type n,
 	const reverse_iterator<T>& rev_it){
-	reverse_iterator<value_type>	tmp(rev_it);
+	reverse_iterator<typename reverse_iterator<T>::value_type>	tmp(rev_it);
 	
 	tmp.p -= n;
 
@@ -252,7 +262,7 @@ reverse_iterator<T>	operator+(typename reverse_iterator<T>::difference_type n,
 template<typename T>
 reverse_iterator<T>	operator-(typename reverse_iterator<T>::difference_type n,
 	const reverse_iterator<T>& rev_it){
-	reverse_iterator<value_type>	tmp(rev_it);
+	reverse_iterator<typename reverse_iterator<T>::value_type>	tmp(rev_it);
 	
 	tmp.p += n;
 
@@ -264,6 +274,11 @@ reverse_iterator<T>	operator-(typename reverse_iterator<T>::difference_type n,
 # define difference_type ptrdiff_t
 #endif
 
+#pragma endregion
+
+#pragma region Const Reverse Iterator
+template<typename T>
+class const_reverse_iterator : public reverse_iterator<const T>{};
 #pragma endregion
 
 }

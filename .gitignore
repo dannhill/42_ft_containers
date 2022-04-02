@@ -33,3 +33,6 @@
 
 # Other junk
 .DS_Store
+
+# Testers
+containers_test

@@ -5,17 +5,18 @@
 #include <stdexcept>
 #include <string>
 #include "ft_iterator.hpp"
+#include "ft_type_traits.hpp"
 
 namespace ft
 {
-
-#define allocator_type Alloc
-#define value_type T
 
 template<typename T, class Alloc = std::allocator<T> >
 class vector
 {
 	public:
+		typedef unsigned long long size_type;
+		typedef Alloc allocator_type;
+		typedef T value_type;
 
 		#pragma region (constructor)
 		explicit vector(const allocator_type& tmp = allocator_type()){
@@ -45,20 +46,26 @@ class vector
 		}
 
 		template <class InputIterator>
-    	vector (InputIterator first, InputIterator last,
+    	vector(typename ft::disable_if<ft::is_integral<InputIterator>::value, InputIterator>
+		::type first, InputIterator last,
         	const allocator_type& tmp = allocator_type()){
 			allocator_type&	alloc = const_cast<allocator_type &>(tmp);
-			_size = last - first;
+			_size = 0;
+			for (; last != first; _size++, last--);
 			_arr = alloc.allocate(_size * 2);
 			_capacity = _size * 2;
 			for (size_t i(0); i < this->capacity(); i++)
 			{
 				if (i < this->size())
-					alloc.construct(&_arr[i], first[i]);
+				{
+					alloc.construct(&_arr[i], *first);
+					first++;
+				}
 				else if (i >= this->size())
-					_arr[i] = reinterpret_cast<value_type>(0);
+					alloc.destroy(&_arr[i]);
 			}
-			
+
+			return;
 		}
 
 		vector(vector<T> const & cpy) : _size(cpy.size()), _capacity(cpy.capacity()){
@@ -107,11 +114,21 @@ class vector
 
 		#pragma region Iterators
 
-		typedef ft::iterator<value_type> 			iterator;
-		typedef	ft::reverse_iterator<value_type>	reverse_iterator;
+		typedef ft::iterator<value_type> 				iterator;
+		typedef	ft::reverse_iterator<value_type>		reverse_iterator;
+		typedef ft::const_iterator<value_type>			const_iterator;
+		typedef ft::const_reverse_iterator<value_type>	const_reverse_iterator;
 		
 		iterator	begin(void){
 			iterator	ret;
+
+			ret += reinterpret_cast<difference_type>(this->_arr) / sizeof(value_type);
+
+			return ret;
+		}
+
+		const_iterator	begin(void) const{
+			const_iterator	ret;
 
 			ret += reinterpret_cast<difference_type>(this->_arr) / sizeof(value_type);
 
@@ -126,6 +143,14 @@ class vector
 			return ret;
 		}
 
+		const_iterator	end(void) const{
+			const_iterator ret;
+
+			ret += reinterpret_cast<difference_type>(this->_arr + this->_size) / sizeof(value_type);
+
+			return ret;
+		}
+
 		reverse_iterator	rbegin(void){
 			reverse_iterator	ret;
 
@@ -134,8 +159,24 @@ class vector
 			return ret;
 		}
 
+		const_reverse_iterator	rbegin(void) const{
+			const_reverse_iterator	ret;
+
+			ret -= reinterpret_cast<difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
+
+			return ret;
+		}
+
 		reverse_iterator	rend(void){
 			reverse_iterator	ret;
+
+			ret -= reinterpret_cast<difference_type>(this->_arr - 1) / sizeof(value_type);
+
+			return ret;
+		}
+
+		const_reverse_iterator	rend(void) const{
+			const_reverse_iterator	ret;
 
 			ret -= reinterpret_cast<difference_type>(this->_arr - 1) / sizeof(value_type);
 
@@ -189,7 +230,7 @@ class vector
 					else if (i >= n && i < this->capacity())
 						continue;
 					else if (i >= this->capacity())
-						swap[i] = reinterpret_cast<value_type>(0);
+						defal.destroy(&swap[i]);
 				}
 				defal.deallocate(_arr, this->capacity());
 				this->_size = n;
@@ -281,19 +322,21 @@ class vector
 
 		#pragma region Modifiers
 		template <class InputIterator>
-		void	assign(InputIterator first, InputIterator last){
-			size_t	sz(last - first);
+		typename ft::disable_if<ft::is_integral<InputIterator>::value
+		>::type assign(InputIterator first, InputIterator last){
+			size_t	sz(0);
+			for (; last != first; sz++, last--);
 
-			this->resize(last - first);
-			for (size_t i(0); i < sz; i++)
+			this->resize(sz);
+			for (size_t i(0); i < sz; i++, first++)
 			{
 				defal.destroy(&_arr[i]);
-				defal.construct(&_arr[i], first[i]);
+				defal.construct(&_arr[i], *first);
 			}
 
 			return;
 		}
-		
+
 		void	assign(size_t n, const value_type& val){
 			size_t	old_size(this->size());
 
@@ -306,7 +349,7 @@ class vector
 
 			return;
 		}
-		
+
 		void	push_back(const value_type& val){
 			this->resize(this->size() + 1, val);
 
@@ -345,16 +388,18 @@ class vector
 		}
 
 		template <class InputIterator>
-			void insert (iterator position, InputIterator first, InputIterator last){
+			typename ft::disable_if<ft::is_integral<InputIterator>::value
+			>::type insert(iterator position, InputIterator first, InputIterator last){
 			size_t	offset(position - this->begin());
-			size_t	range(last - first);
+			size_t	range(0);
+			for (; last != first; range++, last--);
 			size_t	sz(this->size());
 
 			this->resize(sz + range, (*this)[sz - 1]);
-			for (size_t i(sz + range - 2); i > offset; i--)
-				(*this)[i] = (*this)[i - range];
-			for (size_t i(offset), j(0); i < offset + range; i++, j++)
-				(*this)[i] = first[j];
+			for (size_t i(sz); i < sz + range - 1; i++)
+				(*this)[i + range] = (*this)[i];
+			for (size_t i(offset); i < offset + range; i++, first++)
+				(*this)[i] = *first;
 			
 			return;
 		}
@@ -423,7 +468,7 @@ class vector
 		allocator_type			defal;
 		
 		// static const
-		static const size_t	_max_size = 536870912;
+		static const size_t	_max_size = 2305843009213693951;
 		static const std::string	what_of_range;
 
 };
@@ -431,6 +476,7 @@ class vector
 template<typename T, class Alloc>
 const std::string vector<T, Alloc>::what_of_range("vector size exceeded");
 
+#pragma region Non-member functions overloads
 template <class T, class Alloc>
 void swap(vector<T,Alloc>& x, vector<T,Alloc>& y){
 	x.swap(y);
@@ -485,5 +531,6 @@ template <class T, class Alloc>
 bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
 	return !(lhs < rhs);
 }
+#pragma endregion
 
 }
