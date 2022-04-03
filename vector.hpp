@@ -122,7 +122,7 @@ class vector
 		iterator	begin(void){
 			iterator	ret;
 
-			ret += reinterpret_cast<difference_type>(this->_arr) / sizeof(value_type);
+			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr) / sizeof(value_type);
 
 			return ret;
 		}
@@ -130,7 +130,7 @@ class vector
 		const_iterator	begin(void) const{
 			const_iterator	ret;
 
-			ret += reinterpret_cast<difference_type>(this->_arr) / sizeof(value_type);
+			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr) / sizeof(value_type);
 
 			return ret;
 		}
@@ -138,7 +138,7 @@ class vector
 		iterator	end(void){
 			iterator ret;
 
-			ret += reinterpret_cast<difference_type>(this->_arr + this->_size) / sizeof(value_type);
+			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size) / sizeof(value_type);
 
 			return ret;
 		}
@@ -146,7 +146,7 @@ class vector
 		const_iterator	end(void) const{
 			const_iterator ret;
 
-			ret += reinterpret_cast<difference_type>(this->_arr + this->_size) / sizeof(value_type);
+			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size) / sizeof(value_type);
 
 			return ret;
 		}
@@ -154,7 +154,7 @@ class vector
 		reverse_iterator	rbegin(void){
 			reverse_iterator	ret;
 
-			ret -= reinterpret_cast<difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
+			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
 
 			return ret;
 		}
@@ -162,7 +162,7 @@ class vector
 		const_reverse_iterator	rbegin(void) const{
 			const_reverse_iterator	ret;
 
-			ret -= reinterpret_cast<difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
+			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
 
 			return ret;
 		}
@@ -170,7 +170,7 @@ class vector
 		reverse_iterator	rend(void){
 			reverse_iterator	ret;
 
-			ret -= reinterpret_cast<difference_type>(this->_arr - 1) / sizeof(value_type);
+			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr - 1) / sizeof(value_type);
 
 			return ret;
 		}
@@ -178,7 +178,7 @@ class vector
 		const_reverse_iterator	rend(void) const{
 			const_reverse_iterator	ret;
 
-			ret -= reinterpret_cast<difference_type>(this->_arr - 1) / sizeof(value_type);
+			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr - 1) / sizeof(value_type);
 
 			return ret;
 		}
@@ -468,7 +468,7 @@ class vector
 		allocator_type			defal;
 		
 		// static const
-		static const size_t	_max_size = 2305843009213693951;
+		static const size_t	_max_size = 4611686018427387903;
 		static const std::string	what_of_range;
 
 };
