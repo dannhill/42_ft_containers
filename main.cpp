@@ -63,6 +63,12 @@ int main(int argc, char** argv) {
 
 	ft::vector<int>	vec(lst.begin(), lst.end());
 
+	const ft::vector<std::string> pippo(5);
+
+	ft::vector<std::string>::const_iterator it = pippo.begin();
+
+	std::cout << *it << std::endl;
+
 	for (size_t i = 0; i < vec.size(); i++)
 		std::cout << vec[i] << std::endl;
 

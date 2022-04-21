@@ -34,12 +34,13 @@ class vector
 			_arr = alloc.allocate(n * 2);
 			_size = n;
 			_capacity = n * 2;
+			std::cout << val << std::endl;
 			for (size_t i(0); i < this->capacity(); i++)
 			{
 				if (i < this->size())
 					alloc.construct(&_arr[i], val);
 				else if (i >= this->size())
-					_arr[i] = reinterpret_cast<value_type>(0);
+					alloc.destroy(&_arr[i]);
 			}
 
 			return;
@@ -468,7 +469,7 @@ class vector
 		allocator_type			defal;
 		
 		// static const
-		static const size_t	_max_size = 4611686018427387903;
+		static const size_t	_max_size = 2305843009213693951;
 		static const std::string	what_of_range;
 
 };
