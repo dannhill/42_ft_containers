@@ -21,7 +21,9 @@ class vector
 		#pragma region (constructor)
 		explicit vector(const allocator_type& tmp = allocator_type()){
 			allocator_type&	alloc = const_cast<allocator_type &>(tmp);
-			_arr = alloc.allocate(0);
+			value_type	*pippo = alloc.allocate(1);
+			alloc.deallocate(pippo, 1);
+			// _arr = alloc.allocate(0);
 			_size = 0;
 			_capacity = 0;
 
@@ -34,13 +36,12 @@ class vector
 			_arr = alloc.allocate(n * 2);
 			_size = n;
 			_capacity = n * 2;
-			std::cout << val << std::endl;
 			for (size_t i(0); i < this->capacity(); i++)
 			{
 				if (i < this->size())
 					alloc.construct(&_arr[i], val);
-				else if (i >= this->size())
-					alloc.destroy(&_arr[i]);
+				// else if (i >= this->size())
+				// 	alloc.destroy(&_arr[i]);
 			}
 
 			return;
@@ -62,8 +63,8 @@ class vector
 					alloc.construct(&_arr[i], *first);
 					first++;
 				}
-				else if (i >= this->size())
-					alloc.destroy(&_arr[i]);
+				// else if (i >= this->size())
+				// 	alloc.destroy(&_arr[i]);
 			}
 
 			return;
@@ -71,12 +72,13 @@ class vector
 
 		vector(vector<T> const & cpy) : _size(cpy.size()), _capacity(cpy.capacity()){
 			_arr = defal.allocate(cpy.capacity());
+
 			for (size_t i(0); i < this->capacity(); i++)
 			{
 				if (i < this->size())
 					defal.construct(&_arr[i], cpy[i]);
-				else if (i >= this->size())
-					_arr[i] = reinterpret_cast<value_type>(0);
+				// else if (i >= this->size())
+				// 	defal.destroy(&_arr[i]);
 			}
 
 			return;
@@ -87,7 +89,8 @@ class vector
 		virtual	~vector(void){
 			for (size_t i(0); i < this->size(); i++)
 				defal.destroy(&_arr[i]);
-			defal.deallocate(_arr, this->capacity());
+			if (this->size() > 0)
+				defal.deallocate(_arr, this->capacity());
 
 			return;
 		}
@@ -95,21 +98,24 @@ class vector
 
 		#pragma region operator=
 		vector & operator=(vector<T> const & asn){
+			
+			for (size_t i(0); i < this->size(); i++)
+				defal.destroy(&_arr[i]);
+			if (this->size() > 0)
+				defal.deallocate(_arr, this->capacity());
+
 			_size = asn.size();
 			_capacity = asn.capacity();
 			_arr = defal.allocate(asn.capacity());
 			for (size_t i(0); i < this->capacity(); i++)
 			{
 				if (i < this->size())
-				{
-					defal.destroy(&_arr[i]);
-					_arr[i] = asn[i];
-				}
-				else if (i >= this->size())
-					_arr[i] = reinterpret_cast<value_type>(0);
+					defal.construct(&_arr[i], asn[i]);
+				// else if (i >= this->size())
+				// 	defal.destroy(&_arr[i]);
 			}
 
-			return *this;
+			return (*this);
 		}
 		#pragma endregion
 
@@ -199,15 +205,15 @@ class vector
 			{
 				if (n == this->size())
 					return;
-				for (size_t i(n); i < this->size(); i++)
-					defal.destroy(&_arr[i]);
+				// for (size_t i(n); i < this->size(); i++)
+				// 	defal.destroy(&_arr[i]);
 					// _arr[i] = reinterpret_cast<value_type>(0);
 				this->_size = n;
 			}
 			else if (n > this->size() && n <= this->capacity())
 			{
 				for (size_t i(this->size()); i < this->capacity(); i++)
-					_arr[i] = val;
+					defal.construct(&_arr[i], val);
 				this->_size = n;
 			}
 			else if (n > this->capacity() && n <= this->max_size())
@@ -218,22 +224,22 @@ class vector
 				new_capacity = n * 2;
 				if (n * 2 > this->max_size())
 					new_capacity = this->max_size();
-				swap = defal.allocate(new_capacity, this->_arr);
+
+				swap = defal.allocate(new_capacity);
 				for (size_t i(0); i < new_capacity; i++)
 				{
 					if (i < this->size())
 					{
-						swap[i] = _arr[i];
+						defal.construct(&swap[i], _arr[i]);
 						defal.destroy(&_arr[i]);
 					}
 					else if (i >= this->size() && i < n)
-						swap[i] = val;
-					else if (i >= n && i < this->capacity())
-						continue;
-					else if (i >= this->capacity())
-						defal.destroy(&swap[i]);
+						defal.construct(&swap[i], val);
+					// else if (i >= n)
+					// 	defal.destroy(&swap[i]);
 				}
-				defal.deallocate(_arr, this->capacity());
+				if (this->size() > 0)
+					defal.deallocate(_arr, this->capacity());
 				this->_size = n;
 				this->_capacity = new_capacity;
 				this->_arr = swap;
@@ -366,23 +372,27 @@ class vector
 		iterator insert (iterator position, const value_type& val){
 			size_t	offset(position - this->begin());
 			size_t	sz(this->size());
+			iterator	ret;
 
-			this->push_back((*this)[sz - 1]);
-			for (size_t i(sz - 1); i > offset; i--)
+			this->push_back(val);
+			for (size_t i(this->size() - 1); i > offset && sz > 0; i--)
 				(*this)[i] = (*this)[i - 1];
 			(*this)[offset] = val;
 
-			return this->begin() + offset;
+			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr + offset) / sizeof(value_type);
+
+			return ret;
 		}
 
 		void insert (iterator position, size_t n, const value_type& val){
 			size_t	offset(position - this->begin());
 			size_t	sz(this->size());
 
-			this->resize(sz + n, (*this)[sz - 1]);
-			for (size_t i(sz + n - 2); i > offset; i--)
+			this->resize(sz + n, val);
+
+			for (size_t i(this->size() - 1); i >= offset + n && sz > 0; i--)
 				(*this)[i] = (*this)[i - n];
-			for (size_t i(offset); i < offset + n; i++)
+			for (size_t i(offset); i < offset + n && sz > 0; i++)
 				(*this)[i] = val;
 			
 			return;
@@ -395,13 +405,13 @@ class vector
 			size_t	range(0);
 			for (; last != first; range++, last--);
 			size_t	sz(this->size());
-
-			this->resize(sz + range, (*this)[sz - 1]);
-			for (size_t i(sz); i < sz + range - 1; i++)
-				(*this)[i + range] = (*this)[i];
-			for (size_t i(offset); i < offset + range; i++, first++)
-				(*this)[i] = *first;
 			
+			this->resize(sz + range);
+			for (size_t i(offset); i + range< this->size() && sz > 0; i++)
+				(*this)[i + range] = (*this)[i]; //BUG HEAP BUFFER OVERFLOW
+			for (size_t i(offset); i < offset + range && sz > 0; i++, first++)
+				(*this)[i] = *first;
+
 			return;
 		}
 
@@ -445,9 +455,9 @@ class vector
 		}
 
 		void clear(void){
-			size_t	cp(this->capacity());
+			size_t	sz(this->size());
 
-			for (size_t i(0); i < cp; i++)
+			for (size_t i(0); i < sz; i++)
 				defal.destroy(&_arr[i]);
 			this->_size = 0;
 
