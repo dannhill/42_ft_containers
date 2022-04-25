@@ -6,6 +6,20 @@
 namespace ft
 {
 
+#pragma region Forward Declarations
+template<typename T>
+class const_iterator;
+
+template<typename T>
+class iterator;
+
+template<typename T>
+class reverse_iterator;
+
+template<typename T>
+class const_reverse_iterator;
+#pragma endregion
+
 #pragma region Random Access Iterator
 template<typename T>
 class iterator : public std::iterator<std::random_access_iterator_tag, T>{
@@ -32,7 +46,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return;
 		}
 
-		virtual iterator &	operator=(iterator const & asn){
+		iterator &	operator=(iterator const & asn){
 			this->p = asn.p;
 
 			return (*this);
@@ -46,7 +60,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return this->p != cmp.p;
 		}
 
-		virtual value_type	operator*(void) const{
+		virtual value_type &	operator*(void) const{
 			return *(this->p);
 		}
 
@@ -54,16 +68,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return this->p;
 		}
 
-		// BOH
-		// value_type *	operator->(void){
-		// 	return this->p;
-		// }
-
-		// value_type const *	operator->(void) const{
-		// 	return this->p;
-		// }
-
-		virtual iterator	operator++(int){
+		iterator	operator++(int){
 			iterator	tmp(*this);
 
 			(this->p)++;
@@ -71,13 +76,13 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return iterator(tmp);
 		}
 
-		virtual iterator &	operator++(void){
+		iterator &	operator++(void){
 			(this->p)++;
 
 			return (*this);
 		}
 
-		virtual iterator	operator--(int){
+		iterator	operator--(int){
 			iterator	tmp(*this);
 
 			(this->p)--;
@@ -85,13 +90,13 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return iterator(tmp);
 		}
 
-		virtual iterator &	operator--(void){
+		iterator &	operator--(void){
 			(this->p)--;
 
 			return (*this);
 		}
 
-		virtual iterator	operator+(difference_type	add) const{
+		iterator	operator+(difference_type	add) const{
 			iterator tmp;
 			
 			if (add < 0)
@@ -102,11 +107,11 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return tmp;
 		}
 
-		virtual difference_type	operator-(iterator const & sub) const{
+		difference_type	operator-(iterator const & sub) const{
 			return this->p - sub.p;
 		}
 
-		virtual iterator	operator-(difference_type	sub) const{
+		iterator	operator-(difference_type	sub) const{
 			iterator tmp;
 
 			if (sub < 0)
@@ -133,7 +138,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return this->p >= cmp.p;
 		}
 
-		virtual iterator &	operator+=(difference_type	add){
+		iterator &	operator+=(difference_type	add){
 			if (add < 0)
 				this->p -= add * (-1);
 			else if (add >= 0)
@@ -142,7 +147,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return (*this);
 		}
 
-		virtual iterator &	operator-=(difference_type	sub){
+		iterator &	operator-=(difference_type	sub){
 			if (sub < 0)
 				this->p += sub * (-1);
 			else if (sub >= 0)
@@ -158,28 +163,49 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		virtual const value_type &	operator[](difference_type n) const{
 			return *(this->p + n);
 		}
-	private:
+
+		operator const_iterator<value_type>(void){
+			const_iterator<value_type> ret;
+
+			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
+		operator reverse_iterator<value_type>(void){
+			reverse_iterator<value_type> ret;
+
+			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
+		operator const_reverse_iterator<value_type>(void){
+			const_reverse_iterator<value_type> ret;
+
+			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+	protected:
 		value_type	*p;
 };
 #pragma endregion
 
 #pragma region Const Iterator
 template<typename T>
-class const_iterator : public std::iterator<std::random_access_iterator_tag, const T>{
+class const_iterator : public iterator<const T>{
 	public:
-		using typename std::iterator<std::random_access_iterator_tag, const T>::iterator_category;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::value_type;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::difference_type;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::pointer;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::reference;
+		using typename iterator<const T>::iterator_category;
+		using typename iterator<const T>::value_type;
+		using typename iterator<const T>::difference_type;
+		using typename iterator<const T>::pointer;
+		using typename iterator<const T>::reference;
 
-		const_iterator(void) : std::iterator<std::random_access_iterator_tag, const T>(){
+		const_iterator(void) : iterator<const T>(){
 			this->p = NULL;
 
 			return;
 		}
 
-		const_iterator(const_iterator const & cpy) : std::iterator<std::random_access_iterator_tag, const T>(){
+		const_iterator(const_iterator const & cpy) : iterator<const T>(){
 			this->p = cpy.p;
 
 			return;
@@ -189,7 +215,7 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return;
 		}
 
-		virtual const_iterator &	operator=(const_iterator const & asn){
+		const_iterator &	operator=(const_iterator const & asn){
 			this->p = asn.p;
 
 			return (*this);
@@ -203,24 +229,7 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return this->p != cmp.p;
 		}
 
-		virtual value_type	operator*(void) const{
-			return *(this->p);
-		}
-
-		virtual value_type *	operator->(void) const{ // to substitute with pointer keyword
-			return this->p;
-		}
-
-		// BOH
-		// value_type *	operator->(void){
-		// 	return this->p;
-		// }
-
-		// value_type const *	operator->(void) const{
-		// 	return this->p;
-		// }
-
-		virtual const_iterator	operator++(int){
+		const_iterator	operator++(int){
 			const_iterator	tmp(*this);
 
 			(this->p)++;
@@ -228,13 +237,13 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return const_iterator(tmp);
 		}
 
-		virtual const_iterator &	operator++(void){
+		const_iterator &	operator++(void){
 			(this->p)++;
 
 			return (*this);
 		}
 
-		virtual const_iterator	operator--(int){
+		const_iterator	operator--(int){
 			const_iterator	tmp(*this);
 
 			(this->p)--;
@@ -242,13 +251,13 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return const_iterator(tmp);
 		}
 
-		virtual const_iterator &	operator--(void){
+		const_iterator &	operator--(void){
 			(this->p)--;
 
 			return (*this);
 		}
 
-		virtual const_iterator	operator+(difference_type	add) const{
+		const_iterator	operator+(difference_type	add) const{
 			const_iterator tmp;
 			
 			if (add < 0)
@@ -259,11 +268,7 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return tmp;
 		}
 
-		virtual difference_type	operator-(const_iterator const & sub) const{
-			return this->p - sub.p;
-		}
-
-		virtual const_iterator	operator-(difference_type	sub) const{
+		const_iterator	operator-(difference_type	sub) const{
 			const_iterator tmp;
 
 			if (sub < 0)
@@ -272,6 +277,10 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 				tmp.p = this->p - sub;
 			
 			return tmp;
+		}
+
+		difference_type	operator-(const_iterator const & sub) const{
+			return this->p - sub.p;
 		}
 
 		virtual bool	operator<(const_iterator const & cmp) const{
@@ -290,7 +299,7 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return this->p >= cmp.p;
 		}
 
-		virtual const_iterator &	operator+=(difference_type	add){
+		const_iterator &	operator+=(difference_type	add){
 			if (add < 0)
 				this->p -= add * (-1);
 			else if (add >= 0)
@@ -299,7 +308,7 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return (*this);
 		}
 
-		virtual const_iterator &	operator-=(difference_type	sub){
+		const_iterator &	operator-=(difference_type	sub){
 			if (sub < 0)
 				this->p += sub * (-1);
 			else if (sub >= 0)
@@ -308,15 +317,12 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return (*this);
 		}
 
-		virtual value_type &	operator[](difference_type n){
-			return *(this->p + n);
-		}
+		operator const_reverse_iterator<value_type>(void){
+			const_reverse_iterator<value_type> ret;
 
-		virtual const value_type &	operator[](difference_type n) const{
-			return *(this->p + n);
+			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
 		}
-	private:
-		value_type	*p;
 };
 #pragma endregion
 
@@ -334,12 +340,20 @@ class	reverse_iterator : public iterator<T>{
 			return;
 		}
 
-		explicit	reverse_iterator(iterator<T> const & cpy) : iterator<T>(cpy){
+		reverse_iterator(reverse_iterator<T> const & cpy) : iterator<T>(cpy){
 			return;
 		}
 
 		iterator<value_type>	base(void) const{
 			return static_cast<iterator<value_type> >(*this);
+		}
+
+		virtual bool	operator==(reverse_iterator const & cmp) const{
+			return this->p == cmp.p;
+		}
+
+		virtual bool	operator!=(reverse_iterator const & cmp) const{
+			return this->p != cmp.p;
 		}
 
 		reverse_iterator	operator+(difference_type n) const{
@@ -351,7 +365,9 @@ class	reverse_iterator : public iterator<T>{
 		}
 
 		reverse_iterator &	operator++(void){
-			return --(this->p);
+			(this->p)--;
+
+			return (*this);
 		}
 
 		reverse_iterator	operator++(int){
@@ -368,6 +384,10 @@ class	reverse_iterator : public iterator<T>{
 			return *this;
 		}
 
+		difference_type	operator-(reverse_iterator const & sub) const{
+			return this->p - sub.p;
+		}
+
 		reverse_iterator	operator-(difference_type n) const{
 			reverse_iterator	tmp(*this);
 
@@ -377,7 +397,9 @@ class	reverse_iterator : public iterator<T>{
 		}
 
 		reverse_iterator &	operator--(void){
-			return ++(this->p);
+			(this->p)++;
+
+			return (*this);
 		}
 
 		reverse_iterator	operator--(int){
@@ -388,23 +410,63 @@ class	reverse_iterator : public iterator<T>{
 			return tmp;
 		}
 
+		virtual bool	operator<(reverse_iterator const & cmp) const{
+			return this->p < cmp.p;
+		}
+
+		virtual bool	operator>(reverse_iterator const & cmp) const{
+			return this->p > cmp.p;
+		}
+
+		virtual bool	operator<=(reverse_iterator const & cmp) const{
+			return this->p <= cmp.p;
+		}
+
+		virtual bool	operator>=(reverse_iterator const & cmp) const{
+			return this->p >= cmp.p;
+		}
+
 		reverse_iterator &	operator-=(difference_type n){
 			this->p += n;
 
 			return *this;
 		}
-};
 
-#ifndef __APPLE__
-// # define value_type T
-# undef difference_type
-#endif
+		virtual value_type &	operator[](difference_type n){
+			return *(this->p - n);
+		}
+
+		virtual const value_type &	operator[](difference_type n) const{
+			return *(this->p - n);
+		}
+
+		operator const_reverse_iterator<value_type>(void){
+			const_reverse_iterator<value_type> ret;
+
+			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
+		operator const_iterator<value_type>(void){
+			const_iterator<value_type> ret;
+
+			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
+		operator iterator<value_type>(void){
+			iterator<value_type> ret;
+
+			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+};
 
 template<typename T>
 reverse_iterator<T>	operator+(typename reverse_iterator<T>::difference_type n,
 	const reverse_iterator<T>& rev_it){
 	reverse_iterator<typename reverse_iterator<T>::value_type>	tmp(rev_it);
-	
+
 	tmp.p -= n;
 
 	return tmp;
@@ -424,7 +486,145 @@ reverse_iterator<T>	operator-(typename reverse_iterator<T>::difference_type n,
 
 #pragma region Const Reverse Iterator
 template<typename T>
-class const_reverse_iterator : public reverse_iterator<const T>{};
+class const_reverse_iterator : public const_iterator<const T>{
+	public:
+		using typename ft::const_iterator<const T>::iterator_category;
+		using typename ft::const_iterator<const T>::value_type;
+		using typename ft::const_iterator<const T>::difference_type;
+		using typename ft::const_iterator<const T>::pointer;
+		using typename ft::const_iterator<const T>::reference;
+
+		const_reverse_iterator(void) : const_iterator<const T>(){
+			return;
+		}
+
+		const_reverse_iterator(const_reverse_iterator<const T> const & cpy) : const_iterator<const T>(cpy){
+			return;
+		}
+
+		iterator<value_type>	base(void) const{
+			return static_cast<const_iterator<value_type> >(*this);
+		}
+
+		virtual bool	operator==(const_reverse_iterator const & cmp) const{
+			return this->p == cmp.p;
+		}
+
+		virtual bool	operator!=(const_reverse_iterator const & cmp) const{
+			return this->p != cmp.p;
+		}
+
+		const_reverse_iterator	operator+(difference_type n) const{
+			const_reverse_iterator	tmp(*this);
+
+			tmp.p -= n;
+
+			return tmp;
+		}
+
+		const_reverse_iterator &	operator++(void){
+			(this->p)--;
+
+			return (*this);
+		}
+
+		const_reverse_iterator	operator++(int){
+			const_reverse_iterator	tmp(*this);
+
+			(this->p)--;
+
+			return tmp;
+		}
+
+		const_reverse_iterator &	operator+=(difference_type n){
+			this->p -= n;
+
+			return *this;
+		}
+
+		difference_type	operator-(const_reverse_iterator const & sub) const{
+			return this->p - sub.p;
+		}
+
+		const_reverse_iterator	operator-(difference_type n) const{
+			const_reverse_iterator	tmp(*this);
+
+			tmp.p += n;
+
+			return tmp;
+		}
+
+		const_reverse_iterator &	operator--(void){
+			(this->p)++;
+			
+			return (*this);
+		}
+
+		const_reverse_iterator	operator--(int){
+			const_reverse_iterator	tmp(*this);
+
+			(this->p)++;
+
+			return tmp;
+		}
+
+		virtual bool	operator<(const_reverse_iterator const & cmp) const{
+			return this->p < cmp.p;
+		}
+
+		virtual bool	operator>(const_reverse_iterator const & cmp) const{
+			return this->p > cmp.p;
+		}
+
+		virtual bool	operator<=(const_reverse_iterator const & cmp) const{
+			return this->p <= cmp.p;
+		}
+
+		virtual bool	operator>=(const_reverse_iterator const & cmp) const{
+			return this->p >= cmp.p;
+		}
+
+		virtual value_type &	operator[](difference_type n){
+			return *(this->p - n);
+		}
+
+		virtual const value_type &	operator[](difference_type n) const{
+			return *(this->p - n);
+		}
+
+		const_reverse_iterator &	operator-=(difference_type n){
+			this->p += n;
+
+			return *this;
+		}
+
+		operator const_iterator<value_type>(void){
+			const_iterator<value_type> ret;
+
+			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+};
+
+template<typename T>
+const_reverse_iterator<T>	operator+(typename const_reverse_iterator<T>::difference_type n,
+	const const_reverse_iterator<T>& rev_it){
+	const_reverse_iterator<typename const_reverse_iterator<T>::value_type>	tmp(rev_it);
+
+	tmp.p -= n;
+
+	return tmp;
+}
+
+template<typename T>
+const_reverse_iterator<T>	operator-(typename const_reverse_iterator<T>::difference_type n,
+	const const_reverse_iterator<T>& rev_it){
+	const_reverse_iterator<typename const_reverse_iterator<T>::value_type>	tmp(rev_it);
+	
+	tmp.p += n;
+
+	return tmp;
+}
 #pragma endregion
 
 }
