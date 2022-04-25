@@ -187,6 +187,56 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 	protected:
 		value_type	*p;
 };
+
+template<typename T>
+iterator<T>	operator+(typename iterator<T>::difference_type n,
+	const iterator<T>& it){
+	iterator<typename iterator<T>::value_type>	tmp(it);
+
+	tmp.p += n;
+
+	return tmp;
+}
+
+template<typename T>
+iterator<T>	operator-(typename iterator<T>::difference_type n,
+	const iterator<T>& it){
+	iterator<typename iterator<T>::value_type>	tmp(it);
+	
+	tmp.p -= n;
+
+	return tmp;
+}
+
+template <class Iterator>
+bool operator==(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
+	return lhs == rhs;
+}
+
+template <class Iterator>
+bool operator!=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
+	return lhs != rhs;
+}
+
+template <class Iterator>
+bool operator<(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
+	return lhs < rhs;
+}
+
+template <class Iterator>
+bool operator<=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
+	return lhs <= rhs;
+}
+
+template <class Iterator>
+bool operator>(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
+	return lhs > rhs;
+}
+
+template <class Iterator>
+bool operator>=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
+	return lhs >= rhs;
+}
 #pragma endregion
 
 #pragma region Const Iterator
@@ -317,6 +367,20 @@ class const_iterator : public iterator<const T>{
 			return (*this);
 		}
 
+		operator iterator<value_type>(void){
+			iterator<value_type> ret;
+
+			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
+		operator reverse_iterator<value_type>(void){
+			reverse_iterator<value_type> ret;
+
+			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
 		operator const_reverse_iterator<value_type>(void){
 			const_reverse_iterator<value_type> ret;
 
@@ -324,6 +388,56 @@ class const_iterator : public iterator<const T>{
 			return ret;
 		}
 };
+
+template<typename T>
+const_iterator<T>	operator+(typename const_iterator<T>::difference_type n,
+	const const_iterator<T>& con_it){
+	const_iterator<typename const_iterator<T>::value_type>	tmp(con_it);
+
+	tmp.p += n;
+
+	return tmp;
+}
+
+template<typename T>
+const_iterator<T>	operator-(typename const_iterator<T>::difference_type n,
+	const const_iterator<T>& con_it){
+	const_iterator<typename const_iterator<T>::value_type>	tmp(con_it);
+	
+	tmp.p -= n;
+
+	return tmp;
+}
+
+template <class Iterator>
+bool operator==(const const_iterator<Iterator>& lhs, const const_iterator<Iterator>& rhs){
+	return lhs == rhs;
+}
+
+template <class Iterator>
+bool operator!=(const const_iterator<Iterator>& lhs, const const_iterator<Iterator>& rhs){
+	return lhs != rhs;
+}
+
+template <class Iterator>
+bool operator<(const const_iterator<Iterator>& lhs, const const_iterator<Iterator>& rhs){
+	return lhs < rhs;
+}
+
+template <class Iterator>
+bool operator<=(const const_iterator<Iterator>& lhs, const const_iterator<Iterator>& rhs){
+	return lhs <= rhs;
+}
+
+template <class Iterator>
+bool operator>(const const_iterator<Iterator>& lhs, const const_iterator<Iterator>& rhs){
+	return lhs > rhs;
+}
+
+template <class Iterator>
+bool operator>=(const const_iterator<Iterator>& lhs, const const_iterator<Iterator>& rhs){
+	return lhs >= rhs;
+}
 #pragma endregion
 
 #pragma region Reverse Iterator
@@ -482,6 +596,36 @@ reverse_iterator<T>	operator-(typename reverse_iterator<T>::difference_type n,
 	return tmp;
 }
 
+template <class Iterator>
+bool operator==(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
+	return lhs == rhs;
+}
+
+template <class Iterator>
+bool operator!=(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
+	return lhs != rhs;
+}
+
+template <class Iterator>
+bool operator<(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
+	return lhs < rhs;
+}
+
+template <class Iterator>
+bool operator<=(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
+	return lhs <= rhs;
+}
+
+template <class Iterator>
+bool operator>(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
+	return lhs > rhs;
+}
+
+template <class Iterator>
+bool operator>=(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
+	return lhs >= rhs;
+}
+
 #pragma endregion
 
 #pragma region Const Reverse Iterator
@@ -598,10 +742,24 @@ class const_reverse_iterator : public const_iterator<const T>{
 			return *this;
 		}
 
+		operator iterator<value_type>(void){
+			iterator<value_type> ret;
+
+			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
 		operator const_iterator<value_type>(void){
 			const_iterator<value_type> ret;
 
 			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			return ret;
+		}
+
+		operator reverse_iterator<value_type>(void){
+			reverse_iterator<value_type> ret;
+
+			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
 			return ret;
 		}
 };
@@ -624,6 +782,36 @@ const_reverse_iterator<T>	operator-(typename const_reverse_iterator<T>::differen
 	tmp.p += n;
 
 	return tmp;
+}
+
+template <class Iterator>
+bool operator==(const const_reverse_iterator<Iterator>& lhs, const const_reverse_iterator<Iterator>& rhs){
+	return lhs == rhs;
+}
+
+template <class Iterator>
+bool operator!=(const const_reverse_iterator<Iterator>& lhs, const const_reverse_iterator<Iterator>& rhs){
+	return lhs != rhs;
+}
+
+template <class Iterator>
+bool operator<(const const_reverse_iterator<Iterator>& lhs, const const_reverse_iterator<Iterator>& rhs){
+	return lhs < rhs;
+}
+
+template <class Iterator>
+bool operator<=(const const_reverse_iterator<Iterator>& lhs, const const_reverse_iterator<Iterator>& rhs){
+	return lhs <= rhs;
+}
+
+template <class Iterator>
+bool operator>(const const_reverse_iterator<Iterator>& lhs, const const_reverse_iterator<Iterator>& rhs){
+	return lhs > rhs;
+}
+
+template <class Iterator>
+bool operator>=(const const_reverse_iterator<Iterator>& lhs, const const_reverse_iterator<Iterator>& rhs){
+	return lhs >= rhs;
 }
 #pragma endregion
 
