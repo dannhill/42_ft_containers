@@ -32,7 +32,7 @@ fclean:	clean
 re:	fclean all
 
 apnd:
-		$(eval CFLAGS += -ggdb3)
+		$(eval CFLAGS += -ggdb3 -fsanitize=address -g)
 		$(eval NAME = ft_containers_DEBUG)
 
 .PHONY: all, debug, clean, fclean, re, apnd

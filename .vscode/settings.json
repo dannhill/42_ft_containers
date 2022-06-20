@@ -80,6 +80,7 @@
 		"ratio": "cpp",
 		"sstream": "cpp",
 		"string_view": "cpp",
-		"unordered_map": "cpp"
+		"unordered_map": "cpp",
+		"fstream": "cpp"
 	}
 }

@@ -14,7 +14,11 @@ namespace ft
 template < class Key, class T, class Compare = std::less<Key>,
 	class Alloc = std::allocator<std::pair<const Key,T> > >
 class map{
-	
+	public:
+		explicit map (const key_compare& comp = key_compare(),
+			const allocator_type& alloc = allocator_type()){
+			
+		}
 };
 
 }
