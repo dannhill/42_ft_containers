@@ -34,6 +34,7 @@ ft_containers
 
 # Other junk
 .DS_Store
+.vscode
 
 # Testers
 containers_test
