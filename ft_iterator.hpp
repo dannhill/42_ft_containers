@@ -2,26 +2,35 @@
 #include <iterator>// library used only for base iterator
 #include <cstddef>// library used only to include ptrdiff_t
 #include <iostream>// library used only to print debug
+#include "rbt.hpp"
+#include "vector.hpp"
+#include <cmath>
 
 namespace ft
 {
 
 #pragma region Forward Declarations
-template<typename T>
+template<typename T, class Alloc = std::allocator<T> >
+class vector;
+
+template<typename T, class dstruct = vector<T> >
 class const_iterator;
 
-template<typename T>
+template<typename T, class dstruct = vector<T> >
 class iterator;
 
-template<typename T>
+template<typename T, class dstruct = vector<T> >
 class reverse_iterator;
 
-template<typename T>
+template<typename T, class dstruct = vector<T> >
 class const_reverse_iterator;
+
+template<typename value_type, class dstruct>
+class tpointer;
 #pragma endregion
 
 #pragma region Random Access Iterator
-template<typename T>
+template<typename T, class dstruct>
 class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 	public:
 		using typename std::iterator<std::random_access_iterator_tag, T>::iterator_category;
@@ -32,6 +41,12 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 
 		iterator(void) : std::iterator<std::random_access_iterator_tag, value_type>(){
 			this->p = NULL;
+
+			return;
+		}
+
+		iterator(dstruct * container) : std::iterator<std::random_access_iterator_tag, value_type>(){// useful only for red-black tree node pointer. need to modify for vector
+			this->p = container->getRoot();
 
 			return;
 		}
@@ -53,11 +68,11 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		}
 
 		virtual bool	operator==(iterator const & cmp) const{
-			return this->p == cmp.p;
+			return (static_cast<value_type *>(this->p) == static_cast<value_type *>(cmp.p));
 		}
 
 		virtual bool	operator!=(iterator const & cmp) const{
-			return this->p != cmp.p;
+			return (static_cast<value_type *>(this->p) != static_cast<value_type *>(cmp.p));
 		}
 
 		virtual value_type &	operator*(void) const{
@@ -71,13 +86,13 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		iterator	operator++(int){
 			iterator	tmp(*this);
 
-			(this->p)++;
+			this->p = this->p + static_cast<size_t>(1);
 			
 			return iterator(tmp);
 		}
 
 		iterator &	operator++(void){
-			(this->p)++;
+			this->p = this->p + static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -85,13 +100,13 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		iterator	operator--(int){
 			iterator	tmp(*this);
 
-			(this->p)--;
+			this->p = this->p - static_cast<size_t>(1);
 			
 			return iterator(tmp);
 		}
 
 		iterator &	operator--(void){
-			(this->p)--;
+			this->p = this->p - static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -123,35 +138,35 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		}
 
 		virtual bool	operator<(iterator const & cmp) const{
-			return this->p < cmp.p;
+			return (static_cast<value_type *>(this->p) < static_cast<value_type *>(cmp.p));
 		}
 
 		virtual bool	operator>(iterator const & cmp) const{
-			return this->p > cmp.p;
+			return (static_cast<value_type *>(this->p) > static_cast<value_type *>(cmp.p));
 		}
 
 		virtual bool	operator<=(iterator const & cmp) const{
-			return this->p <= cmp.p;
+			return (static_cast<value_type *>(this->p) <= static_cast<value_type *>(cmp.p));
 		}
 
 		virtual bool	operator>=(iterator const & cmp) const{
-			return this->p >= cmp.p;
+			return (static_cast<value_type *>(this->p) >= static_cast<value_type *>(cmp.p));
 		}
 
 		iterator &	operator+=(difference_type	add){
 			if (add < 0)
-				this->p -= add * (-1);
+				this->p = this->p - add * (-1);
 			else if (add >= 0)
-				this->p += add;
+				this->p = this->p + add;
 			
 			return (*this);
 		}
 
 		iterator &	operator-=(difference_type	sub){
 			if (sub < 0)
-				this->p += sub * (-1);
+				this->p = this->p + sub * (-1);
 			else if (sub >= 0)
-				this->p -= sub;
+				this->p = this->p - sub;
 			
 			return (*this);
 		}
@@ -185,7 +200,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return ret;
 		}
 	protected:
-		value_type	*p;
+		tpointer<value_type, dstruct>	p;
 };
 
 template<typename T>
@@ -240,14 +255,14 @@ bool operator>=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
 #pragma endregion
 
 #pragma region Const Iterator
-template<typename T>
-class const_iterator : public iterator<const T>{
+template<typename T, class dstruct>
+class const_iterator : public iterator<const T, dstruct>{
 	public:
-		using typename iterator<const T>::iterator_category;
-		using typename iterator<const T>::value_type;
-		using typename iterator<const T>::difference_type;
-		using typename iterator<const T>::pointer;
-		using typename iterator<const T>::reference;
+		using typename iterator<const T, dstruct>::iterator_category;
+		using typename iterator<const T, dstruct>::value_type;
+		using typename iterator<const T, dstruct>::difference_type;
+		using typename iterator<const T, dstruct>::pointer;
+		using typename iterator<const T, dstruct>::reference;
 
 		const_iterator(void) : iterator<const T>(){
 			this->p = NULL;
@@ -282,13 +297,13 @@ class const_iterator : public iterator<const T>{
 		const_iterator	operator++(int){
 			const_iterator	tmp(*this);
 
-			(this->p)++;
+			this->p = this->p + 1;
 			
 			return const_iterator(tmp);
 		}
 
 		const_iterator &	operator++(void){
-			(this->p)++;
+			this->p = this->p + 1;
 
 			return (*this);
 		}
@@ -296,13 +311,13 @@ class const_iterator : public iterator<const T>{
 		const_iterator	operator--(int){
 			const_iterator	tmp(*this);
 
-			(this->p)--;
+			this->p = this->p - 1;
 			
 			return const_iterator(tmp);
 		}
 
 		const_iterator &	operator--(void){
-			(this->p)--;
+			this->p = this->p - 1;
 
 			return (*this);
 		}
@@ -351,18 +366,18 @@ class const_iterator : public iterator<const T>{
 
 		const_iterator &	operator+=(difference_type	add){
 			if (add < 0)
-				this->p -= add * (-1);
+				this->p = this->p - add * (-1);
 			else if (add >= 0)
-				this->p += add;
+				this->p = this->p + add;
 			
 			return (*this);
 		}
 
 		const_iterator &	operator-=(difference_type	sub){
 			if (sub < 0)
-				this->p += sub * (-1);
+				this->p = this->p + sub * (-1);
 			else if (sub >= 0)
-				this->p -= sub;
+				this->p = this->p - sub;
 			
 			return (*this);
 		}
@@ -441,14 +456,14 @@ bool operator>=(const const_iterator<Iterator>& lhs, const const_iterator<Iterat
 #pragma endregion
 
 #pragma region Reverse Iterator
-template<typename T>
-class	reverse_iterator : public iterator<T>{
+template<typename T, class dstruct>
+class	reverse_iterator : public iterator<T, dstruct>{
 	public:
-		using typename ft::iterator<T>::iterator_category;
-		using typename ft::iterator<T>::value_type;
-		using typename ft::iterator<T>::difference_type;
-		using typename ft::iterator<T>::pointer;
-		using typename ft::iterator<T>::reference;
+		using typename ft::iterator<T, dstruct>::iterator_category;
+		using typename ft::iterator<T, dstruct>::value_type;
+		using typename ft::iterator<T, dstruct>::difference_type;
+		using typename ft::iterator<T, dstruct>::pointer;
+		using typename ft::iterator<T, dstruct>::reference;
 
 		reverse_iterator(void) : iterator<T>(){
 			return;
@@ -479,7 +494,7 @@ class	reverse_iterator : public iterator<T>{
 		}
 
 		reverse_iterator &	operator++(void){
-			(this->p)--;
+			this->p = this->p + 1;
 
 			return (*this);
 		}
@@ -487,13 +502,19 @@ class	reverse_iterator : public iterator<T>{
 		reverse_iterator	operator++(int){
 			reverse_iterator	tmp(*this);
 
-			(this->p)--;
+			this->p = this->p - 1;
 
 			return tmp;
 		}
 
 		reverse_iterator &	operator+=(difference_type n){
-			this->p -= n;
+			this->p = this->p - n;
+
+			return *this;
+		}
+
+		reverse_iterator &	operator-=(difference_type n){
+			this->p = this->p + n;
 
 			return *this;
 		}
@@ -511,7 +532,7 @@ class	reverse_iterator : public iterator<T>{
 		}
 
 		reverse_iterator &	operator--(void){
-			(this->p)++;
+			this->p = this->p + 1;
 
 			return (*this);
 		}
@@ -519,7 +540,7 @@ class	reverse_iterator : public iterator<T>{
 		reverse_iterator	operator--(int){
 			reverse_iterator	tmp(*this);
 
-			(this->p)++;
+			this->p = this->p + 1;
 
 			return tmp;
 		}
@@ -538,12 +559,6 @@ class	reverse_iterator : public iterator<T>{
 
 		virtual bool	operator>=(reverse_iterator const & cmp) const{
 			return this->p >= cmp.p;
-		}
-
-		reverse_iterator &	operator-=(difference_type n){
-			this->p += n;
-
-			return *this;
 		}
 
 		virtual value_type &	operator[](difference_type n){
@@ -629,14 +644,14 @@ bool operator>=(const reverse_iterator<Iterator>& lhs, const reverse_iterator<It
 #pragma endregion
 
 #pragma region Const Reverse Iterator
-template<typename T>
-class const_reverse_iterator : public const_iterator<const T>{
+template<typename T, class dstruct>
+class const_reverse_iterator : public const_iterator<const T, dstruct>{
 	public:
-		using typename ft::const_iterator<const T>::iterator_category;
-		using typename ft::const_iterator<const T>::value_type;
-		using typename ft::const_iterator<const T>::difference_type;
-		using typename ft::const_iterator<const T>::pointer;
-		using typename ft::const_iterator<const T>::reference;
+		using typename ft::const_iterator<const T, dstruct>::iterator_category;
+		using typename ft::const_iterator<const T, dstruct>::value_type;
+		using typename ft::const_iterator<const T, dstruct>::difference_type;
+		using typename ft::const_iterator<const T, dstruct>::pointer;
+		using typename ft::const_iterator<const T, dstruct>::reference;
 
 		const_reverse_iterator(void) : const_iterator<const T>(){
 			return;
@@ -667,7 +682,7 @@ class const_reverse_iterator : public const_iterator<const T>{
 		}
 
 		const_reverse_iterator &	operator++(void){
-			(this->p)--;
+			this->p = this->p - 1;
 
 			return (*this);
 		}
@@ -675,13 +690,13 @@ class const_reverse_iterator : public const_iterator<const T>{
 		const_reverse_iterator	operator++(int){
 			const_reverse_iterator	tmp(*this);
 
-			(this->p)--;
+			this->p = this->p - 1;
 
 			return tmp;
 		}
 
 		const_reverse_iterator &	operator+=(difference_type n){
-			this->p -= n;
+			this->p = this->p - n;
 
 			return *this;
 		}
@@ -699,7 +714,7 @@ class const_reverse_iterator : public const_iterator<const T>{
 		}
 
 		const_reverse_iterator &	operator--(void){
-			(this->p)++;
+			this->p = this->p + 1;
 			
 			return (*this);
 		}
@@ -707,7 +722,7 @@ class const_reverse_iterator : public const_iterator<const T>{
 		const_reverse_iterator	operator--(int){
 			const_reverse_iterator	tmp(*this);
 
-			(this->p)++;
+			this->p = this->p + 1;
 
 			return tmp;
 		}
@@ -737,7 +752,7 @@ class const_reverse_iterator : public const_iterator<const T>{
 		}
 
 		const_reverse_iterator &	operator-=(difference_type n){
-			this->p += n;
+			this->p = this->p + n;
 
 			return *this;
 		}
@@ -841,6 +856,140 @@ class iterator_traits<const T*>{
 	typedef const T* pointer;
 	typedef const T& reference;
 	typedef std::random_access_iterator_tag iterator_category;
+};
+#pragma endregion
+
+#pragma region Template Pointer
+template<typename value_type, class dstruct>
+class tpointer{
+	public:
+		operator value_type*(){
+			return p;
+		}
+	private:
+		value_type	*p;
+};
+
+template<typename value_type>
+class tpointer<value_type, RBtree<value_type> >{
+	typedef tpointer<value_type, RBtree<value_type> > point;
+	
+	public:
+		tpointer<value_type, RBtree<value_type> >(void){
+			this->_p = NULL;
+
+			return;
+		}
+
+		tpointer<value_type, RBtree<value_type> >(point const & cpy){
+			this->_p = cpy._p;
+
+			return;
+		}
+
+		tpointer<value_type, RBtree<value_type> >(RBnode<value_type> *cpy){
+			this->_p = cpy;
+
+			return;
+		}
+
+		operator value_type*() const{
+			if (this->_p == NULL)
+				return NULL;
+			return &(this->_p->getVal());
+		}
+
+		point &	operator=(point const & asn){
+			this->_p = asn._p;
+
+			return (*this);
+		}
+
+		point &	operator=(RBnode<value_type> *asn){
+			this->_p = asn;
+
+			return (*this);
+		}
+
+		// point	operator++(int){
+		// 	point	tmp(this->_p);
+
+		// 	this->_p = RBtree<value_type>::findNext(this->_p);
+			
+		// 	return (point(tmp));
+		// }
+
+		// point &	operator++(void){
+		// 	this->_p = RBtree<value_type>::findNext(this->_p);
+
+		// 	return (*this);
+		// }
+
+		// point	operator--(int){
+		// 	point	tmp(this->_p);
+
+		// 	this->_p = RBtree<value_type>::findPrev(this->_p);
+			
+		// 	return (point(tmp));
+		// }
+
+		// point &	operator--(void){
+		// 	this->_p = RBtree<value_type>::findPrev(this->_p);
+
+		// 	return (*this);
+		// }
+
+		point	operator+(long	add) const{
+			return (this->operator+(static_cast<size_t>(add) ) ); 
+		}
+
+		point	operator-(long	sub) const{
+			return (this->operator-(static_cast<size_t>(sub) ) ); 
+		}
+
+		point	operator+(size_t	add) const{
+			RBnode<value_type> *tmp = this->_p;
+			RBnode<value_type> *(*func)(RBnode<value_type> *);
+			
+			if (add < 0)
+				func = RBtree<value_type>::findPrev;
+			else if (add >= 0)
+				func = RBtree<value_type>::findNext;
+			
+			for (int i = labs(static_cast<long>(add)); tmp && i > 0; i--)
+				tmp = func(tmp);
+
+			return point(tmp);
+		}
+
+		point	operator-(size_t	sub) const{
+			RBnode<value_type> *tmp = this->_p;
+			RBnode<value_type> *(*func)(RBnode<value_type> *);
+			
+			if (sub < 0)
+				func = RBtree<value_type>::findNext;
+			else if (sub >= 0)
+				func = RBtree<value_type>::findPrev;
+			
+			for (int i = labs(static_cast<long>(sub)); tmp && i > 0; i--)
+				tmp = func(tmp);
+
+			return point(tmp);
+		}
+
+		// tpointer<value_type, RBtree<value_type> >	operator-(size_t	sub) const{
+		// 	iterator tmp;
+
+		// 	if (sub < 0)
+		// 		tmp.p = this->_p + (sub * (-1));
+		// 	else if (sub >= 0)
+		// 		tmp.p = this->_p - sub;
+			
+		// 	return tmp;
+		// }
+
+	public:
+		RBnode<value_type>	*_p;
 };
 #pragma endregion
 

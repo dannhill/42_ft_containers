@@ -53,6 +53,14 @@ int	main(void){
 
 	albero->applyFn(albero->getRoot(), printNode);
 
+	ft::iterator<int, RBtree<int> >	kek(albero);
+
+	ft::iterator<int, RBtree<int> >	lel(albero);
+
+	kek -= 1;
+
+	std::cout << std::boolalpha << kek[2] << std::endl;
+
 	delete albero;
 
 	return 0;

@@ -3,6 +3,8 @@
 
 #include <cassert>
 #include <stdexcept>
+#include <functional>
+#include "ft_iterator.hpp"
 
 #define NIL   NULL
 #define LEFT  0
@@ -344,6 +346,56 @@ class RBtree{
 			return res;
 		}
 
+		static RBnode<T>	*findNext(RBnode<T> *root){
+			// if (root == NULL)
+			// 	return NULL;
+			// if (value == root->getVal())
+			// 	return (root->child[1] * (root->child[1] != NULL)
+			// 	+ root->parent * (!childDir(root)));
+
+			// RBnode<T>	*res;
+
+			// res = find(root->child[0], value);
+			// if (res == NIL || res->getVal() != value)
+			// 	res = find(root->child[1], value);
+			
+			if (!root)
+				return NULL;
+			if (root->child[RIGHT])
+				return (findMin(root->child[RIGHT]));
+			if (root->parent && childDir(root) == LEFT)
+				return (root->parent);
+
+			do
+			{
+				root = root->parent;
+			} while (root && root->parent && childDir(root));
+
+			if (root)
+				return (root->parent);
+
+			return NULL;
+		}
+
+		static RBnode<T>	*findPrev(RBnode<T> *root){
+			if (!root)
+				return NULL;
+			if (root->child[LEFT])
+				return (findMax(root->child[LEFT]));
+			if (root->parent && childDir(root) == RIGHT)
+				return (root->parent);
+
+			do
+			{
+				root = root->parent;
+			} while (root && root->parent && !childDir(root));
+
+			if (root)
+				return (root->parent);
+
+			return NULL;
+		}
+
 		static RBnode<T>	*findMax(RBnode<T>	*subtree)
 		{
 			if (subtree == NULL)
@@ -352,6 +404,16 @@ class RBtree{
 				return subtree;
 			
 			return findMax(subtree->child[RIGHT]);
+		}
+
+		static RBnode<T>	*findMin(RBnode<T>	*subtree)
+		{
+			if (subtree == NULL)
+				throw std::exception();
+			if (subtree->child[LEFT] == NIL)
+				return subtree;
+			
+			return findMin(subtree->child[LEFT]);
 		}
 
 		void	applyFn(RBnode<T> *root, void(*func)(RBnode<T> *val)){

@@ -81,6 +81,7 @@
 		"sstream": "cpp",
 		"string_view": "cpp",
 		"unordered_map": "cpp",
-		"fstream": "cpp"
+		"fstream": "cpp",
+		"xhash": "cpp"
 	}
 }
