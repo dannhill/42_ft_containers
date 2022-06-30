@@ -46,7 +46,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		}
 
 		iterator(dstruct * container) : std::iterator<std::random_access_iterator_tag, value_type>(){// useful only for red-black tree node pointer. need to modify for vector
-			this->p = container->getRoot();
+			this->p = container;
 
 			return;
 		}
@@ -264,13 +264,18 @@ class const_iterator : public iterator<const T, dstruct>{
 		using typename iterator<const T, dstruct>::pointer;
 		using typename iterator<const T, dstruct>::reference;
 
-		const_iterator(void) : iterator<const T>(){
+		const_iterator(void) : iterator<const T, dstruct>(){
 			this->p = NULL;
 
 			return;
 		}
 
-		const_iterator(const_iterator const & cpy) : iterator<const T>(){
+		const_iterator(dstruct * container) : iterator<const T, dstruct>(container){// useful only for red-black tree node pointer. need to modify for vector
+
+			return;
+		}
+
+		const_iterator(const_iterator const & cpy) : iterator<const T, dstruct>(){
 			this->p = cpy.p;
 
 			return;
@@ -465,11 +470,16 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		using typename ft::iterator<T, dstruct>::pointer;
 		using typename ft::iterator<T, dstruct>::reference;
 
-		reverse_iterator(void) : iterator<T>(){
+		reverse_iterator(void) : iterator<T, dstruct>(){
 			return;
 		}
 
-		reverse_iterator(reverse_iterator<T> const & cpy) : iterator<T>(cpy){
+		reverse_iterator(dstruct * container) : iterator<T, dstruct>(container){// useful only for red-black tree node pointer. need to modify for vector
+
+			return;
+		}
+
+		reverse_iterator(reverse_iterator<T> const & cpy) : iterator<T, dstruct>(cpy){
 			return;
 		}
 
@@ -653,11 +663,16 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		using typename ft::const_iterator<const T, dstruct>::pointer;
 		using typename ft::const_iterator<const T, dstruct>::reference;
 
-		const_reverse_iterator(void) : const_iterator<const T>(){
+		const_reverse_iterator(void) : const_iterator<const T, dstruct>(){
 			return;
 		}
 
-		const_reverse_iterator(const_reverse_iterator<const T> const & cpy) : const_iterator<const T>(cpy){
+		const_reverse_iterator(dstruct * container) : const_iterator<const T, dstruct>(container){// useful only for red-black tree node pointer. need to modify for vector
+
+			return;
+		}
+
+		const_reverse_iterator(const_reverse_iterator<const T, dstruct> const & cpy) : const_iterator<const T>(cpy){
 			return;
 		}
 
@@ -881,14 +896,20 @@ class tpointer<value_type, RBtree<value_type> >{
 			return;
 		}
 
+		tpointer<value_type, RBtree<value_type> >(RBnode<value_type> *node){
+			this->_p = node;
+
+			return;
+		}
+
 		tpointer<value_type, RBtree<value_type> >(point const & cpy){
 			this->_p = cpy._p;
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(RBnode<value_type> *cpy){
-			this->_p = cpy;
+		tpointer<value_type, RBtree<value_type> >(RBtree<value_type> *cpy){
+			this->_p = cpy->getRoot();
 
 			return;
 		}
