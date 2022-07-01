@@ -74,13 +74,11 @@ int	main(void){
 
 	albero->applyFn(albero->getRoot(), printNode);
 
-	ft::const_reverse_iterator<const int, RBtree<const int> >	kek(albero);
+	ft::const_iterator<const int, RBtree<const int> >	kek(albero);
 
-	ft::const_reverse_iterator<const int, RBtree<const int> >	lel(albero);
+	ft::const_iterator<const int, RBtree<const int> >	lel(albero);
 
-	kek++;
-
-	std::cout << kek[0] << std::endl;
+	std::cout << *(kek + 5) << std::endl;
 
 	delete albero;
 

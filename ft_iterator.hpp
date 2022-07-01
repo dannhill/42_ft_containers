@@ -265,7 +265,7 @@ class const_iterator : public iterator<T, dstruct>{
 		using typename iterator<T, dstruct>::reference;
 
 		const_iterator(void) : iterator<T, dstruct>(){
-			this->p = NULL;
+			this->p = static_cast<dstruct *>(NULL);
 
 			return;
 		}
@@ -498,7 +498,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		reverse_iterator	operator+(difference_type n) const{
 			reverse_iterator	tmp(*this);
 
-			tmp.p -= n;
+			tmp.p = tmp.p - n;
 
 			return tmp;
 		}
@@ -536,7 +536,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		reverse_iterator	operator-(difference_type n) const{
 			reverse_iterator	tmp(*this);
 
-			tmp.p += n;
+			tmp.p = tmp.p + n;
 
 			return tmp;
 		}
@@ -691,7 +691,7 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		const_reverse_iterator	operator+(difference_type n) const{
 			const_reverse_iterator	tmp(*this);
 
-			tmp.p -= n;
+			tmp.p = tmp.p - n;
 
 			return tmp;
 		}
@@ -710,12 +710,6 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 			return tmp;
 		}
 
-		const_reverse_iterator &	operator+=(difference_type n){
-			this->p = this->p - n;
-
-			return *this;
-		}
-
 		difference_type	operator-(const_reverse_iterator const & sub) const{
 			return this->p - sub.p;
 		}
@@ -723,7 +717,7 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		const_reverse_iterator	operator-(difference_type n) const{
 			const_reverse_iterator	tmp(*this);
 
-			tmp.p += n;
+			tmp.p = tmp.p + n;
 
 			return tmp;
 		}
@@ -768,6 +762,12 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 
 		const_reverse_iterator &	operator-=(difference_type n){
 			this->p = this->p + n;
+
+			return *this;
+		}
+
+		const_reverse_iterator &	operator+=(difference_type n){
+			this->p = this->p - n;
 
 			return *this;
 		}
