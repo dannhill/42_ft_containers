@@ -4,7 +4,6 @@
 #include <cassert>
 #include <stdexcept>
 #include <functional>
-#include "ft_iterator.hpp"
 #include "ft_type_traits.hpp"
 
 #define NIL   NULL
@@ -84,9 +83,9 @@ class RBnode{
 
 template<typename T>
 class RBtree{
-	typedef RBnode<T> nodeType;
-
 	public:
+		typedef RBnode<T> nodeType;
+		
 		RBtree(void) : root(NIL){
 			return;
 		}

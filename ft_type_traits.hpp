@@ -213,4 +213,12 @@ template< class T > struct remove_const                { typedef T type; };
 template< class T > struct remove_const<const T>       { typedef T type; };
 #pragma endregion
 
+#pragma region is_same
+template<class T, class U>
+struct is_same : false_type {};
+ 
+template<class T>
+struct is_same<T, T> : true_type {};
+#pragma endregion
+
 }

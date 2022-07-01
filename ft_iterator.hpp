@@ -2,8 +2,8 @@
 #include <iterator>// library used only for base iterator
 #include <cstddef>// library used only to include ptrdiff_t
 #include <iostream>// library used only to print debug
+#include "ft_type_traits.hpp"
 #include "rbt.hpp"
-#include "vector.hpp"
 #include <cmath>
 
 namespace ft
@@ -12,6 +12,12 @@ namespace ft
 #pragma region Forward Declarations
 template<typename T, class Alloc = std::allocator<T> >
 class vector;
+
+// template<typename T>
+// class RBnode;
+
+// template<typename T>
+// class RBtree;
 
 template<typename T, class dstruct = vector<T> >
 class const_iterator;
@@ -25,7 +31,7 @@ class reverse_iterator;
 template<typename T, class dstruct = vector<T> >
 class const_reverse_iterator;
 
-template<typename value_type, class dstruct>
+template<typename value_type, class dstruct = vector<value_type> >
 class tpointer;
 #pragma endregion
 
@@ -39,20 +45,20 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		using typename std::iterator<std::random_access_iterator_tag, T>::pointer;
 		using typename std::iterator<std::random_access_iterator_tag, T>::reference;
 
-		iterator(void) : std::iterator<std::random_access_iterator_tag, value_type>(){
-			this->p = static_cast<dstruct *>(NULL);
+		iterator(void) : std::iterator<std::random_access_iterator_tag, value_type>(), p(static_cast<dstruct *>(NULL) ){
+			// this->p = static_cast<dstruct *>(NULL);
 
 			return;
 		}
 
-		iterator(dstruct * container) : std::iterator<std::random_access_iterator_tag, value_type>(){// useful only for red-black tree node pointer. need to modify for vector
-			this->p = container;
+		iterator(dstruct * container) : std::iterator<std::random_access_iterator_tag, value_type>(), p(container){// useful only for red-black tree node pointer. need to modify for vector
+			// this->p = container;
 
 			return;
 		}
 
-		iterator(iterator const & cpy) : std::iterator<std::random_access_iterator_tag, value_type>(){
-			this->p = cpy.p;
+		iterator(iterator const & cpy) : std::iterator<std::random_access_iterator_tag, value_type>(), p(cpy.p){
+			// this->p = cpy.p;
 
 			return;
 		}
@@ -875,12 +881,14 @@ class iterator_traits<const T*>{
 #pragma endregion
 
 #pragma region Template Pointer
-template<typename value_type, class dstruct>
-class tpointer{
+template<typename value_type>
+class tpointer<value_type, vector<value_type> >{
 	public:
-		tpointer(dstruct *container){
+		typedef value_type * pointer;
+		
+		tpointer(vector<value_type> *container){
 			if (container)
-				this->p = &(container[0]);
+				this->p = &(container->front());
 			else
 				this->p = NULL;
 
@@ -889,21 +897,22 @@ class tpointer{
 
 		tpointer &	operator=(tpointer const & asn){
 			if (asn)
-				this->p = &(asn[0]);
+				this->p = &(asn->front());
 
 			return (*this);
 		}
 
-		operator value_type*(){
+		operator value_type*() const{
 			return p;
 		}
 	private:
 		value_type	*p;
 };
 
-template<typename value_type>
-class tpointer<value_type, RBtree<value_type> >{
+template<typename value_type, class dstruct>
+class tpointer{
 	typedef tpointer<value_type, RBtree<value_type> > point;
+	typedef typename dstruct::nodeType nodeType;
 
 	public:
 		tpointer<value_type, RBtree<value_type> >(void){
@@ -912,7 +921,7 @@ class tpointer<value_type, RBtree<value_type> >{
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(RBnode<value_type> *node){
+		tpointer<value_type, RBtree<value_type> >(nodeType *node){
 			this->_p = node;
 
 			return;
@@ -942,7 +951,7 @@ class tpointer<value_type, RBtree<value_type> >{
 			return (*this);
 		}
 
-		point &	operator=(RBnode<value_type> *asn){
+		point &	operator=(nodeType *asn){
 			this->_p = asn;
 
 			return (*this);
@@ -964,8 +973,8 @@ class tpointer<value_type, RBtree<value_type> >{
 		}
 
 		point	operator+(size_t	add) const{
-			RBnode<value_type> *tmp = this->_p;
-			RBnode<value_type> *(*func)(RBnode<value_type> *);
+			nodeType *tmp = this->_p;
+			nodeType *(*func)(nodeType *);
 			
 			if (add < 0)
 				func = RBtree<value_type>::findPrev;
@@ -979,8 +988,8 @@ class tpointer<value_type, RBtree<value_type> >{
 		}
 
 		point	operator-(size_t	sub) const{
-			RBnode<value_type> *tmp = this->_p;
-			RBnode<value_type> *(*func)(RBnode<value_type> *);
+			nodeType *tmp = this->_p;
+			nodeType *(*func)(nodeType *);
 
 			if (sub < 0)
 				func = RBtree<value_type>::findNext;
@@ -997,7 +1006,7 @@ class tpointer<value_type, RBtree<value_type> >{
 			if (!this->_p)
 				throw std::exception();
 
-			RBnode<value_type>	*tmp = this->_p;
+			nodeType	*tmp = this->_p;
 			size_t	i;
 
 			for(i = 0; tmp != sub._p; i++)
@@ -1018,8 +1027,10 @@ class tpointer<value_type, RBtree<value_type> >{
 		// }
 
 	public:
-		RBnode<value_type>	*_p;
+		nodeType	*_p;
 };
+
+
 #pragma endregion
 
 }

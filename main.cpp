@@ -10,13 +10,14 @@
 	// #include <map.hpp>
 	// #include <stack.hpp>
 	#include <list>
+	#include "ft_iterator.hpp"
+	#include "rbt.hpp"
 	#include "vector.hpp"
 	#include "ft_type_traits.hpp"
 #endif
 
 #include <stdlib.h>
 #include <cstdlib>
-#include "rbt.hpp"
 
 void	printNode(RBnode<int> *node){
 	std::cout << node->getVal() << ": " << node->getColor() << std::endl;
@@ -62,6 +63,8 @@ RBtree<const int>	*randomTree(int size, bool con = true){
 
 int	main(void){
 	RBtree<const int>	*albero;
+
+	ft::iterator<int>	ite;
 
 	srand(time(NULL));
 

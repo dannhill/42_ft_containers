@@ -121,10 +121,10 @@ class vector
 
 		#pragma region Iterators
 
-		typedef ft::iterator<value_type> 				iterator;
-		typedef	ft::reverse_iterator<value_type>		reverse_iterator;
-		typedef ft::const_iterator<value_type>			const_iterator;
-		typedef ft::const_reverse_iterator<value_type>	const_reverse_iterator;
+		typedef ft::iterator<value_type, vector<value_type> > 				iterator;
+		typedef	ft::reverse_iterator<value_type, vector<value_type> >		reverse_iterator;
+		typedef ft::const_iterator<value_type, vector<value_type> >			const_iterator;
+		typedef ft::const_reverse_iterator<value_type, vector<value_type> >	const_reverse_iterator;
 		
 		iterator	begin(void){
 			iterator	ret;
