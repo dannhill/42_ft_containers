@@ -904,7 +904,7 @@ class tpointer{
 template<typename value_type>
 class tpointer<value_type, RBtree<value_type> >{
 	typedef tpointer<value_type, RBtree<value_type> > point;
-	
+
 	public:
 		tpointer<value_type, RBtree<value_type> >(void){
 			this->_p = NULL;
@@ -981,7 +981,7 @@ class tpointer<value_type, RBtree<value_type> >{
 		point	operator-(size_t	sub) const{
 			RBnode<value_type> *tmp = this->_p;
 			RBnode<value_type> *(*func)(RBnode<value_type> *);
-			
+
 			if (sub < 0)
 				func = RBtree<value_type>::findNext;
 			else if (sub >= 0)
@@ -991,6 +991,19 @@ class tpointer<value_type, RBtree<value_type> >{
 				tmp = func(tmp);
 
 			return point(tmp);
+		}
+
+		size_t	operator-(point const & sub) const{
+			if (!this->_p)
+				throw std::exception();
+
+			RBnode<value_type>	*tmp = this->_p;
+			size_t	i;
+
+			for(i = 0; tmp != sub._p; i++)
+				tmp = RBtree<value_type>::findPrev(tmp);
+
+			return i;
 		}
 
 		// tpointer<value_type, RBtree<value_type> >	operator-(size_t	sub) const{

@@ -85,7 +85,7 @@ class RBnode{
 template<typename T>
 class RBtree{
 	typedef RBnode<T> nodeType;
-	
+
 	public:
 		RBtree(void) : root(NIL){
 			return;

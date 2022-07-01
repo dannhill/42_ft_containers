@@ -78,7 +78,9 @@ int	main(void){
 
 	ft::const_iterator<const int, RBtree<const int> >	lel(albero);
 
-	std::cout << *(kek + 5) << std::endl;
+	kek += 5;
+
+	std::cout << (kek - lel) << std::endl;
 
 	delete albero;
 
