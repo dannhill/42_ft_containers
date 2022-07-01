@@ -40,7 +40,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		using typename std::iterator<std::random_access_iterator_tag, T>::reference;
 
 		iterator(void) : std::iterator<std::random_access_iterator_tag, value_type>(){
-			this->p = NULL;
+			this->p = static_cast<dstruct *>(NULL);
 
 			return;
 		}
@@ -256,26 +256,26 @@ bool operator>=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
 
 #pragma region Const Iterator
 template<typename T, class dstruct>
-class const_iterator : public iterator<const T, dstruct>{
+class const_iterator : public iterator<T, dstruct>{
 	public:
-		using typename iterator<const T, dstruct>::iterator_category;
-		using typename iterator<const T, dstruct>::value_type;
-		using typename iterator<const T, dstruct>::difference_type;
-		using typename iterator<const T, dstruct>::pointer;
-		using typename iterator<const T, dstruct>::reference;
+		using typename iterator<T, dstruct>::iterator_category;
+		using typename iterator<T, dstruct>::value_type;
+		using typename iterator<T, dstruct>::difference_type;
+		using typename iterator<T, dstruct>::pointer;
+		using typename iterator<T, dstruct>::reference;
 
-		const_iterator(void) : iterator<const T, dstruct>(){
+		const_iterator(void) : iterator<T, dstruct>(){
 			this->p = NULL;
 
 			return;
 		}
 
-		const_iterator(dstruct * container) : iterator<const T, dstruct>(container){// useful only for red-black tree node pointer. need to modify for vector
+		const_iterator(dstruct * container) : iterator<T, dstruct>(container){// useful only for red-black tree node pointer. need to modify for vector
 
 			return;
 		}
 
-		const_iterator(const_iterator const & cpy) : iterator<const T, dstruct>(){
+		const_iterator(const_iterator const & cpy) : iterator<T, dstruct>(){
 			this->p = cpy.p;
 
 			return;
@@ -302,13 +302,13 @@ class const_iterator : public iterator<const T, dstruct>{
 		const_iterator	operator++(int){
 			const_iterator	tmp(*this);
 
-			this->p = this->p + 1;
+			this->p = this->p + static_cast<size_t>(1);
 			
 			return const_iterator(tmp);
 		}
 
 		const_iterator &	operator++(void){
-			this->p = this->p + 1;
+			this->p = this->p + static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -316,13 +316,13 @@ class const_iterator : public iterator<const T, dstruct>{
 		const_iterator	operator--(int){
 			const_iterator	tmp(*this);
 
-			this->p = this->p - 1;
+			this->p = this->p - static_cast<size_t>(1);
 			
 			return const_iterator(tmp);
 		}
 
 		const_iterator &	operator--(void){
-			this->p = this->p - 1;
+			this->p = this->p - static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -504,7 +504,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		}
 
 		reverse_iterator &	operator++(void){
-			this->p = this->p + 1;
+			this->p = this->p + static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -512,7 +512,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		reverse_iterator	operator++(int){
 			reverse_iterator	tmp(*this);
 
-			this->p = this->p - 1;
+			this->p = this->p - static_cast<size_t>(1);
 
 			return tmp;
 		}
@@ -542,7 +542,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		}
 
 		reverse_iterator &	operator--(void){
-			this->p = this->p + 1;
+			this->p = this->p + static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -550,7 +550,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		reverse_iterator	operator--(int){
 			reverse_iterator	tmp(*this);
 
-			this->p = this->p + 1;
+			this->p = this->p + static_cast<size_t>(1);
 
 			return tmp;
 		}
@@ -672,7 +672,7 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 			return;
 		}
 
-		const_reverse_iterator(const_reverse_iterator<const T, dstruct> const & cpy) : const_iterator<const T>(cpy){
+		const_reverse_iterator(const_reverse_iterator<const T, dstruct> const & cpy) : const_iterator<const T, dstruct>(cpy){
 			return;
 		}
 
@@ -697,7 +697,7 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		}
 
 		const_reverse_iterator &	operator++(void){
-			this->p = this->p - 1;
+			this->p = this->p - static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -705,7 +705,7 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		const_reverse_iterator	operator++(int){
 			const_reverse_iterator	tmp(*this);
 
-			this->p = this->p - 1;
+			this->p = this->p - static_cast<size_t>(1);
 
 			return tmp;
 		}
@@ -729,7 +729,7 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		}
 
 		const_reverse_iterator &	operator--(void){
-			this->p = this->p + 1;
+			this->p = this->p + static_cast<size_t>(1);
 			
 			return (*this);
 		}
@@ -737,7 +737,7 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		const_reverse_iterator	operator--(int){
 			const_reverse_iterator	tmp(*this);
 
-			this->p = this->p + 1;
+			this->p = this->p + static_cast<size_t>(1);
 
 			return tmp;
 		}
@@ -878,6 +878,22 @@ class iterator_traits<const T*>{
 template<typename value_type, class dstruct>
 class tpointer{
 	public:
+		tpointer(dstruct *container){
+			if (container)
+				this->p = &(container[0]);
+			else
+				this->p = NULL;
+
+			return;
+		}
+
+		tpointer &	operator=(tpointer const & asn){
+			if (asn)
+				this->p = &(asn[0]);
+
+			return (*this);
+		}
+
 		operator value_type*(){
 			return p;
 		}
@@ -932,33 +948,12 @@ class tpointer<value_type, RBtree<value_type> >{
 			return (*this);
 		}
 
-		// point	operator++(int){
-		// 	point	tmp(this->_p);
+		point & operator=(RBtree<value_type> *asn){
+			if (asn)
+				this->_p = asn->getRoot();
 
-		// 	this->_p = RBtree<value_type>::findNext(this->_p);
-			
-		// 	return (point(tmp));
-		// }
-
-		// point &	operator++(void){
-		// 	this->_p = RBtree<value_type>::findNext(this->_p);
-
-		// 	return (*this);
-		// }
-
-		// point	operator--(int){
-		// 	point	tmp(this->_p);
-
-		// 	this->_p = RBtree<value_type>::findPrev(this->_p);
-			
-		// 	return (point(tmp));
-		// }
-
-		// point &	operator--(void){
-		// 	this->_p = RBtree<value_type>::findPrev(this->_p);
-
-		// 	return (*this);
-		// }
+			return (*this);
+		}
 
 		point	operator+(long	add) const{
 			return (this->operator+(static_cast<size_t>(add) ) ); 

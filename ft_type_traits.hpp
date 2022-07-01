@@ -208,4 +208,9 @@ template<bool Cond, class T = void> struct disable_if {};
 template<class T> struct disable_if<false, T> { typedef T type; };
 #pragma endregion
 
+#pragma region remove_const
+template< class T > struct remove_const                { typedef T type; };
+template< class T > struct remove_const<const T>       { typedef T type; };
+#pragma endregion
+
 }

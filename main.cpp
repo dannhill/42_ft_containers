@@ -22,6 +22,10 @@ void	printNode(RBnode<int> *node){
 	std::cout << node->getVal() << ": " << node->getColor() << std::endl;
 }
 
+void	printNode(RBnode<const int> *node){
+	std::cout << node->getVal() << ": " << node->getColor() << std::endl;
+}
+
 RBtree<int>	*randomTree(int size){
 	RBnode<int>	*root = new RBnode<int>(0, BLACK);
 	RBtree<int>	*tree = new RBtree<int>(root);
@@ -39,12 +43,29 @@ RBtree<int>	*randomTree(int size){
 	return tree;
 }
 
+RBtree<const int>	*randomTree(int size, bool con = true){
+	RBnode<const int>	*root = new RBnode<const int>(0, BLACK);
+	RBtree<const int>	*tree = new RBtree<const int>(root);
+	(void)con;
+
+
+	for (int i = 1; i < size; i++){
+		RBnode<const int>	*temp;
+		if ((temp = tree->find(tree->getRoot(), i - 1))->getChild(RIGHT) == NIL)
+		{
+			tree->RBinsert(new RBnode<const int>(i, RED), temp, RIGHT);
+		}
+	}
+
+	return tree;
+}
+
 int	main(void){
-	RBtree<int>	*albero;
+	RBtree<const int>	*albero;
 
 	srand(time(NULL));
 
-	albero = randomTree(14);
+	albero = randomTree(14, false);
 
 	albero->RBdelete(albero->find(albero->getRoot(), 7));
 
@@ -53,9 +74,9 @@ int	main(void){
 
 	albero->applyFn(albero->getRoot(), printNode);
 
-	ft::const_reverse_iterator<int, RBtree<int> >	kek(albero);
+	ft::const_reverse_iterator<const int, RBtree<const int> >	kek(albero);
 
-	ft::const_reverse_iterator<int, RBtree<int> >	lel(albero);
+	ft::const_reverse_iterator<const int, RBtree<const int> >	lel(albero);
 
 	kek++;
 

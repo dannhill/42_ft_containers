@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <functional>
 #include "ft_iterator.hpp"
+#include "ft_type_traits.hpp"
 
 #define NIL   NULL
 #define LEFT  0
@@ -83,6 +84,8 @@ class RBnode{
 
 template<typename T>
 class RBtree{
+	typedef RBnode<T> nodeType;
+	
 	public:
 		RBtree(void) : root(NIL){
 			return;
@@ -194,7 +197,7 @@ class RBtree{
 				RBnode<T>	*swap;
 
 				swap = findMax(N->child[LEFT]);
-				N->val = swap->getVal();
+				const_cast<typename ft::remove_const<T>::type &>(N->val) = swap->getVal();
 
 				RBdeleteRoot(Tree, swap);
 
@@ -298,32 +301,6 @@ class RBtree{
 
 			//case D2:
 			return;
-
-			//do all other cases
-			// RBnode<T>	*sib = New->parent->child[!dir];
-			// if (sib != NIL && sib->getColor() == ::BLACK)
-			// {
-			// 	RBnode<T>	*clos = sib->getChild(dir);
-			// 	if (clos != NIL && clos->getColor() == ::RED)
-			// 	{
-			// 		RotateDir(sib, !dir);
-			// 		sib->color = ::RED;
-			// 		clos->color = ::BLACK;
-			// 		dist = sib;
-			// 		sib = clos;
-			// 	}
-			// 	RBnode<T>	*dist = sib->getChild(!dir);
-
-			// 	if (dist != NIL && dist->getColor() == ::RED)
-			// 	{
-			// 		RotateDirRoot(Tree, New->parent, dir);
-			// 		sib->color = New->parent->color;
-			// 		New->parent->color = BLACK;
-			// 		dist->color = BLACK;
-			// 		return;
-			// 	}
-			// }
-			// (void)Tree;
 		}
 
 		void	RBdelete(RBnode<T>* New){
