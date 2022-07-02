@@ -57,6 +57,11 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return;
 		}
 
+		iterator(typename dstruct::nodeType * point, bool end = false) : std::iterator<std::random_access_iterator_tag, value_type>(), p(point, end){
+
+			return;
+		}
+
 		iterator(iterator const & cpy) : std::iterator<std::random_access_iterator_tag, value_type>(), p(cpy.p){
 			// this->p = cpy.p;
 
@@ -281,8 +286,12 @@ class const_iterator : public iterator<T, dstruct>{
 			return;
 		}
 
-		const_iterator(const_iterator const & cpy) : iterator<T, dstruct>(){
-			this->p = cpy.p;
+		const_iterator(typename dstruct::nodeType * node, bool end = false) : iterator<T, dstruct>(node, end){// useful only for red-black tree node pointer. need to modify for vector
+
+			return;
+		}
+
+		const_iterator(const_iterator const & cpy) : iterator<T, dstruct>(cpy){
 
 			return;
 		}
@@ -310,7 +319,7 @@ class const_iterator : public iterator<T, dstruct>{
 
 			this->p = this->p + static_cast<size_t>(1);
 			
-			return const_iterator(tmp);
+			return tmp;
 		}
 
 		const_iterator &	operator++(void){
@@ -915,39 +924,40 @@ class tpointer{
 	typedef typename dstruct::nodeType nodeType;
 
 	public:
-		tpointer<value_type, RBtree<value_type> >(void){
-			this->_p = NULL;
+		tpointer<value_type, RBtree<value_type> >(bool end = false) : _p(NULL), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(nodeType *node){
-			this->_p = node;
+		tpointer<value_type, RBtree<value_type> >(nodeType *node, bool end = false) : _p(node), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(point const & cpy){
-			this->_p = cpy._p;
+		tpointer<value_type, RBtree<value_type> >(point const & cpy, bool end = false) : _p(cpy._p), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(RBtree<value_type> *cpy){
-			this->_p = cpy->getRoot();
+		tpointer<value_type, RBtree<value_type> >(RBtree<value_type> *cpy, bool end = false) : _end(end){
+			if (cpy == NULL)
+				this->_p = NULL;
+			else
+				this->_p = cpy->getRoot();
 
 			return;
 		}
 
 		operator value_type*() const{
-			if (this->_p == NULL)
+			if (this->_p == NULL || this->_end)
 				return NULL;
 			return &(this->_p->getVal());
 		}
 
 		point &	operator=(point const & asn){
 			this->_p = asn._p;
-
+			this->_end = asn._end;
+			
 			return (*this);
 		}
 
@@ -984,12 +994,19 @@ class tpointer{
 			for (int i = labs(static_cast<long>(add)); tmp && i > 0; i--)
 				tmp = func(tmp);
 
-			return point(tmp);
+			return point(tmp, tmp == NULL);
 		}
 
 		point	operator-(size_t	sub) const{
-			nodeType *tmp = this->_p;
-			nodeType *(*func)(nodeType *);
+			nodeType	*tmp = this->_p;
+			nodeType	*(*func)(nodeType *);
+			bool		isEnd(this->_end);
+
+			if (sub > 0)
+			{
+				sub -= this->_end;
+				isEnd = false;
+			}
 
 			if (sub < 0)
 				func = RBtree<value_type>::findNext;
@@ -999,7 +1016,7 @@ class tpointer{
 			for (int i = labs(static_cast<long>(sub)); tmp && i > 0; i--)
 				tmp = func(tmp);
 
-			return point(tmp);
+			return point(tmp, isEnd);
 		}
 
 		size_t	operator-(point const & sub) const{
@@ -1012,7 +1029,7 @@ class tpointer{
 			for(i = 0; tmp != sub._p; i++)
 				tmp = RBtree<value_type>::findPrev(tmp);
 
-			return i;
+			return i + this->_end;
 		}
 
 		// tpointer<value_type, RBtree<value_type> >	operator-(size_t	sub) const{
@@ -1026,8 +1043,9 @@ class tpointer{
 		// 	return tmp;
 		// }
 
-	public:
+	private:
 		nodeType	*_p;
+		bool		_end;
 };
 
 

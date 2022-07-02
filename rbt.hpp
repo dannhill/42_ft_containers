@@ -375,7 +375,7 @@ class RBtree{
 		static RBnode<T>	*findMax(RBnode<T>	*subtree)
 		{
 			if (subtree == NULL)
-				throw std::exception();
+				return NULL;
 			if (subtree->child[RIGHT] == NIL)
 				return subtree;
 			
@@ -404,6 +404,8 @@ class RBtree{
 		}
 
 		RBnode<T>	*getRoot(void) const{
+			if (!this->root)
+				return NULL;
 			return (this->root);
 		}
 

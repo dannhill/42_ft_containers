@@ -17,6 +17,7 @@ class vector
 		typedef unsigned long long size_type;
 		typedef Alloc allocator_type;
 		typedef T value_type;
+		typedef T nodeType;
 
 		#pragma region (constructor)
 		explicit vector(const allocator_type& tmp = allocator_type()){

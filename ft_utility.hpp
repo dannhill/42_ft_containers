@@ -1,5 +1,5 @@
 #pragma once
-
+#include "ft_type_traits.hpp"
 namespace ft
 {
 
@@ -12,26 +12,22 @@ struct pair{
 
 		pair(void){return;}
 
-		pair(const pair<T1, T2> & pr){
-			this->first = pr.first;
-			this->second = pr.second;
+		pair(const pair<T1, T2> & pr) : first(pr.first), second(pr.second){
 
 			return;
 		}
 	
-		pair(const first_type & a, const second_type & b){
-			this->first = a;
-			this->second = b;
+		pair(const first_type & a, const second_type & b) : first(a), second(b){
 
 			return;
 		}
 
-
+		//temporarily removed const qualifier. Must change pair allocation to dynamic in RBT nodes and tree
 		pair & operator=(const pair& pr){
-			this->first = pr.first;
-			this->second = pr.second;
+			const_cast<typename ft::remove_const<first_type>::type &>(this->first) = pr.first;
+			const_cast<typename ft::remove_const<second_type>::type &>(this->second) = pr.second;
 
-			return;
+			return (*this);
 		}
 
 		first_type	first;
@@ -43,6 +39,7 @@ bool operator==(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs){
 	if (lhs.first == rhs.first)
 		if (lhs.second == rhs.second)
 			return true;
+	return false;
 }
 
 template <class T1, class T2>

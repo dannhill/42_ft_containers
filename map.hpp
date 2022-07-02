@@ -25,23 +25,87 @@ class map{
 		typedef Compare key_compare;
 		class	value_compare;
 		typedef std::allocator<value_type> allocator_type;
-		using allocator_type::reference reference;
-		using allocator_type::const_reference const_reference;
-		using allocator_type::pointer pointer;
-		using allocator_type::const_pointer;
-		//TODO
-		typedef ft::iterator<value_type, RBtree<value_type> >::iterator;
-		typedef ft::const_iterator<value_type, RBtree<value_type> >::const_iterator;
-		typedef ft::reverse_iterator<value_type, RBtree<value_type> >::reverse_iterator;
-		typedef ft::const_reverse_iterator<value_type, RBtree<value_type> >::const_reverse_iterator;
-		typedef ft::iterator<value_type, RBtree<value_type> >::difference_type;
+		typedef typename allocator_type::reference reference;
+		typedef typename allocator_type::const_reference const_reference;
+		typedef typename allocator_type::pointer pointer;
+		typedef typename allocator_type::const_pointer const_pointer;
+		typedef typename ft::iterator<value_type, RBtree<value_type> > iterator;
+		typedef typename ft::const_iterator<value_type, RBtree<value_type> > const_iterator;
+		typedef typename ft::reverse_iterator<value_type, RBtree<value_type> > reverse_iterator;
+		typedef typename ft::const_reverse_iterator<value_type, RBtree<value_type> > const_reverse_iterator;
+		typedef typename ft::iterator<value_type, RBtree<value_type> >::difference_type difference_type;
 		typedef size_t size_type;
-		
+		//optional
+		typedef RBnode<value_type> nodeType;
+
+		#pragma region (constructor)
 		explicit map (const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()){
-			
+			(void)comp;
+			(void)alloc;
+
+			tree = new RBtree<value_type>;
+
 			return;
 		}
+
+		template <class InputIterator>
+  		map (InputIterator first, InputIterator last,
+       		const key_compare& comp = key_compare(),
+       		const allocator_type& alloc = allocator_type()){
+			
+			(void)comp;
+			(void)alloc;
+
+			tree = new RBtree<value_type>;
+
+			for(; first != last; first++)
+			{
+				this->tree->RBinsert(new nodeType(*first), //create new node with same element of first
+				this->tree->findMax(this->tree->getRoot() ), //find the current max element in the new tree
+				RIGHT ); //set the new node as the right child
+			}
+		
+			return;
+		}
+
+		map (const map& x){
+			(void)x;
+
+			return;
+		}
+		#pragma endregion
+
+		#pragma region (destructor)
+		~map(void){
+			delete tree;
+		}
+		#pragma endregion
+
+		#pragma region operator=
+		map& operator= (const map& x){
+			(void)x;
+
+			return (*this);
+		}
+		#pragma endregion
+
+		#pragma region Iterators
+		iterator begin(){
+			return (iterator(tree->findMin(tree->getRoot() ) ) );
+		}
+
+		const_iterator begin() const{
+			return (const_iterator(tree->findMin(tree->getRoot() ) ) );
+		}
+
+		iterator end(){
+			return (iterator(tree->findMax(tree->getRoot() ), true ) );
+		}
+		#pragma endregion
+
+	public: //must change to private(or protected)
+		RBtree<value_type>	*tree;
 };
 
 template <class Key, class T, class Compare, class Alloc>

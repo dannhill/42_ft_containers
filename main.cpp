@@ -10,8 +10,10 @@
 	// #include <map.hpp>
 	// #include <stack.hpp>
 	#include <list>
+	#include "ft_utility.hpp"
 	#include "ft_iterator.hpp"
 	#include "rbt.hpp"
+	#include "map.hpp"
 	#include "vector.hpp"
 	#include "ft_type_traits.hpp"
 #endif
@@ -19,32 +21,30 @@
 #include <stdlib.h>
 #include <cstdlib>
 
-void	printNode(RBnode<int> *node){
-	std::cout << node->getVal() << ": " << node->getColor() << std::endl;
+void	printNode(RBnode<ft::pair<int, std::string> > *node){
+	std::cout << node->getVal().first << ": " << node->getColor() << std::endl;
 }
 
-void	printNode(RBnode<const int> *node){
-	std::cout << node->getVal() << ": " << node->getColor() << std::endl;
+void	printNode(RBnode<ft::pair<const int, std::string> > *node){
+	std::cout << node->getVal().first << ": " << node->getColor() << std::endl;
 }
 
-RBtree<int>	*randomTree(int size){
-	RBnode<int>	*root = new RBnode<int>(0, BLACK);
-	RBtree<int>	*tree = new RBtree<int>(root);
-	
-
+RBtree<ft::pair<const int, std::string> >	*randomTree(int size){
+	RBnode<ft::pair<const int, std::string> >	*root = new RBnode<ft::pair<const int, std::string> >(ft::pair<const int, std::string>(0, "first"), BLACK);
+	RBtree<ft::pair<const int, std::string> >	*tree = new RBtree<ft::pair<const int, std::string> >(root);
 
 	for (int i = 1; i < size; i++){
-		RBnode<int>	*temp;
-		if ((temp = tree->find(tree->getRoot(), i - 1))->getChild(RIGHT) == NIL)
+		RBnode<ft::pair<const int, std::string> >	*temp;
+		if ((temp = tree->findMax(tree->getRoot()))->getChild(RIGHT) == NIL)
 		{
-			tree->RBinsert(new RBnode<int>(i, RED), temp, RIGHT);
+			tree->RBinsert(new RBnode<ft::pair<const int, std::string> >(ft::pair<const int, std::string>(i, "next"), RED), temp, RIGHT);
 		}
 	}
 
 	return tree;
 }
 
-RBtree<const int>	*randomTree(int size, bool con = true){
+RBtree<const int>	*randomTree(int size, bool con){
 	RBnode<const int>	*root = new RBnode<const int>(0, BLACK);
 	RBtree<const int>	*tree = new RBtree<const int>(root);
 	(void)con;
@@ -62,28 +62,38 @@ RBtree<const int>	*randomTree(int size, bool con = true){
 }
 
 int	main(void){
-	RBtree<const int>	*albero;
+	RBtree<ft::pair<const int, std::string> >	*albero;
 
 	ft::iterator<int>	ite;
 
 	srand(time(NULL));
 
-	albero = randomTree(14, false);
+	albero = randomTree(14);
 
-	albero->RBdelete(albero->find(albero->getRoot(), 7));
+	albero->RBdelete(albero->find(albero->getRoot(), ft::pair<const int, std::string>(7, "next") ) );
 
 	if (albero->getRoot() != NULL)
-		std::cout << "Root: " << albero->getRoot()->getVal() << std::endl;
+		std::cout << "Root: " << albero->getRoot()->getVal().first << std::endl;
 
 	albero->applyFn(albero->getRoot(), printNode);
 
-	ft::const_iterator<const int, RBtree<const int> >	kek(albero);
+	ft::iterator<ft::pair<const int, std::string>, RBtree<ft::pair<const int, std::string> > >	kek(albero);
 
-	ft::const_iterator<const int, RBtree<const int> >	lel(albero);
+	ft::iterator<ft::pair<const int, std::string>, RBtree<ft::pair<const int, std::string> > >	lel(albero);
 
-	kek += 5;
+	kek -= 3;
+	lel += 9;
 
-	std::cout << (kek - lel) << std::endl;
+	std::cout << (lel - kek) << std::endl;
+
+	ft::map<int, std::string>	pippo(kek, lel + 1);
+
+	ft::map<int, std::string>::iterator	itb = pippo.begin();
+
+	// albero->applyFn(pippo.tree->getRoot(), printNode);
+
+	for(; itb != pippo.end() ; itb++)
+		std::cout << itb->first << std::endl;
 
 	delete albero;
 
