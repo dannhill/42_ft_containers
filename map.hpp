@@ -40,7 +40,7 @@ class map{
 
 		#pragma region (constructor)
 		explicit map (const key_compare& comp = key_compare(),
-			const allocator_type& alloc = allocator_type()){
+			const allocator_type& alloc = allocator_type()) : _size(0){
 			(void)comp;
 			(void)alloc;
 
@@ -52,14 +52,14 @@ class map{
 		template <class InputIterator>
   		map (InputIterator first, InputIterator last,
        		const key_compare& comp = key_compare(),
-       		const allocator_type& alloc = allocator_type()){
+       		const allocator_type& alloc = allocator_type()) : _size(0){
 			
 			(void)comp;
 			(void)alloc;
 
 			tree = new RBtree<value_type>;
 
-			for(; first != last; first++)
+			for(; first != last; first++, this->_size++)
 			{
 				this->tree->RBinsert(new nodeType(*first), //create new node with same element of first
 				this->tree->findMax(this->tree->getRoot() ), //find the current max element in the new tree
@@ -69,8 +69,15 @@ class map{
 			return;
 		}
 
-		map (const map& x){
-			(void)x;
+		map (const map& x) : _size(x._size){
+			const_iterator	ite(x.begin());
+
+			for(; ite != x.end(); ite++)
+			{ //curly brackets for clearer code
+				this->tree->RBinsert(new nodeType(*ite), //create new node with same element of first
+					this->tree->findMax(this->tree->getRoot()), //find the current max element in the new tree
+					RIGHT); //set the new node as the right child
+			}
 
 			return;
 		}
@@ -100,12 +107,59 @@ class map{
 		}
 
 		iterator end(){
-			return (iterator(tree->findMax(tree->getRoot() ), true ) );
+			return (iterator(tree->findMax(tree->getRoot() ), 1 ) );
+		}
+
+		const_iterator	end() const{
+			return (const_iterator(tree->findMax(tree->getRoot() ), 1) );
+		}
+
+		reverse_iterator rbegin(){
+			return (reverse_iterator(tree->findMax(tree->getRoot() ) ) );
+		}
+
+		const_reverse_iterator rbegin() const{
+			return (const_reverse_iterator(tree->findMax(tree->getRoot() ) ) );
+		}
+
+		reverse_iterator rend(){
+			return (reverse_iterator(tree->findMin(tree->getRoot() ), 3) );
+		}
+
+		const_reverse_iterator rend() const{
+			return (const_reverse_iterator(tree->findMin(tree->getRoot() ), 3) );
+		}
+		#pragma endregion
+
+		#pragma region Capacity
+		bool empty() const{
+			return (tree->getRoot() == NULL);
+		}
+
+		size_type size() const{
+			return (this->_size);
+		}
+
+		size_type max_size() const{
+			return (this->_max_size);
+		}
+		#pragma endregion
+
+		#pragma region Element access
+		//TODO: operator[]
+		#pragma endregion
+
+		#pragma region Operations
+		iterator find (const key_type& k){
+			
 		}
 		#pragma endregion
 
 	public: //must change to private(or protected)
 		RBtree<value_type>	*tree;
+
+		size_type			_size;
+		static size_type	_max_size;
 };
 
 template <class Key, class T, class Compare, class Alloc>
@@ -125,5 +179,8 @@ class map<Key,T,Compare,Alloc>::value_compare
 			return comp(x.first, y.first);
 		}
 };
+
+template < class Key, class T, class Compare, class Alloc>
+map<Key, T, Compare, Alloc>::size_type	map<Key, T, Compare, Alloc>::_max_size(230584300921369395);
 
 }

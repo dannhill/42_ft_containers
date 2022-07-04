@@ -86,14 +86,20 @@ int	main(void){
 
 	std::cout << (lel - kek) << std::endl;
 
-	ft::map<int, std::string>	pippo(kek, lel + 1);
+	const ft::map<int, std::string>	pippo(kek, lel + 1);
 
-	ft::map<int, std::string>::iterator	itb = pippo.begin();
+	ft::map<int, std::string>::const_iterator	itb = pippo.begin();
+	ft::map<int, std::string>::const_iterator	ita = pippo.end();
+
 
 	// albero->applyFn(pippo.tree->getRoot(), printNode);
 
 	for(; itb != pippo.end() ; itb++)
 		std::cout << itb->first << std::endl;
+
+	std::cout << std::endl;
+
+	std::cout << (pippo.end() - pippo.begin()) << std::endl;
 
 	delete albero;
 

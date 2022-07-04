@@ -924,22 +924,22 @@ class tpointer{
 	typedef typename dstruct::nodeType nodeType;
 
 	public:
-		tpointer<value_type, RBtree<value_type> >(bool end = false) : _p(NULL), _end(end){
+		tpointer<value_type, RBtree<value_type> >(short end = 0) : _p(NULL), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(nodeType *node, bool end = false) : _p(node), _end(end){
+		tpointer<value_type, RBtree<value_type> >(nodeType *node, short end = 0) : _p(node), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(point const & cpy, bool end = false) : _p(cpy._p), _end(end){
+		tpointer<value_type, RBtree<value_type> >(point const & cpy, short end = 0) : _p(cpy._p), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(RBtree<value_type> *cpy, bool end = false) : _end(end){
+		tpointer<value_type, RBtree<value_type> >(RBtree<value_type> *cpy, short end = 0) : _end(end){
 			if (cpy == NULL)
 				this->_p = NULL;
 			else
@@ -983,9 +983,16 @@ class tpointer{
 		}
 
 		point	operator+(size_t	add) const{
-			nodeType *tmp = this->_p;
-			nodeType *(*func)(nodeType *);
+			nodeType	*tmp = this->_p;
+			nodeType	*(*func)(nodeType *);
+			short		isBeg(this->_end == 2);
 			
+			if (add > 0)
+			{
+				add -= (this->_end == 2);
+				isBeg = 0;
+			}
+
 			if (add < 0)
 				func = RBtree<value_type>::findPrev;
 			else if (add >= 0)
@@ -994,18 +1001,18 @@ class tpointer{
 			for (int i = labs(static_cast<long>(add)); tmp && i > 0; i--)
 				tmp = func(tmp);
 
-			return point(tmp, tmp == NULL);
+			return point(tmp, (tmp == NULL) + (tmp != NULL) * isBeg);
 		}
 
 		point	operator-(size_t	sub) const{
 			nodeType	*tmp = this->_p;
 			nodeType	*(*func)(nodeType *);
-			bool		isEnd(this->_end);
+			short		isEnd(this->_end == 1);
 
 			if (sub > 0)
 			{
-				sub -= this->_end;
-				isEnd = false;
+				sub -= this->_end == 1;
+				isEnd = 0;
 			}
 
 			if (sub < 0)
@@ -1016,20 +1023,20 @@ class tpointer{
 			for (int i = labs(static_cast<long>(sub)); tmp && i > 0; i--)
 				tmp = func(tmp);
 
-			return point(tmp, isEnd);
+			return point(tmp, (tmp == NULL) * 2 + (tmp != NULL) * isEnd);
 		}
 
 		size_t	operator-(point const & sub) const{
 			if (!this->_p)
 				throw std::exception();
 
-			nodeType	*tmp = this->_p;
+			point tmp(*this);
 			size_t	i;
 
-			for(i = 0; tmp != sub._p; i++)
-				tmp = RBtree<value_type>::findPrev(tmp);
+			for(i = 0; tmp._p != sub._p; i++)
+				tmp = tmp - static_cast<size_t>(1);
 
-			return i + this->_end;
+			return i + (this->_end == 1) + (tmp._end == 2);
 		}
 
 		// tpointer<value_type, RBtree<value_type> >	operator-(size_t	sub) const{
@@ -1045,7 +1052,7 @@ class tpointer{
 
 	private:
 		nodeType	*_p;
-		bool		_end;
+		short		_end;
 };
 
 

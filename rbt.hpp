@@ -322,6 +322,19 @@ class RBtree{
 			return res;
 		}
 
+		RBnode<T>	*findCompare(RBnode<T> *root, T value, bool (*less)(const T& x, const T& y)){
+			if (root == NULL)
+				return NULL;
+			if (!(less(root->getVal(), value) || less(value, root->getVal() ) ) )
+				return root;
+			else if (less(root->getVal(), value) && root->getChild(RIGHT) )
+				return findCompare(root->getChild(RIGHT), value, less);
+			else
+				return findCompare(root->getChild(LEFT), value, less);
+
+			return NULL;
+		}
+
 		static RBnode<T>	*findNext(RBnode<T> *root){
 			// if (root == NULL)
 			// 	return NULL;
