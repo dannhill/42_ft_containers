@@ -16,12 +16,12 @@ namespace ft
 
 
 template < class Key, class T, class Compare = std::less<Key>,
-	class Alloc = std::allocator<std::pair<const Key,T> > >
+	class Alloc = std::allocator<pair<const Key,T> > >
 class map{
 	public:
 		typedef Key key_type;
 		typedef T mapped_type;
-		typedef ft::pair<const key_type,mapped_type> value_type;
+		typedef pair<const key_type,mapped_type> value_type;
 		typedef Compare key_compare;
 		class	value_compare;
 		typedef std::allocator<value_type> allocator_type;
@@ -146,12 +146,18 @@ class map{
 		#pragma endregion
 
 		#pragma region Element access
-		//TODO: operator[]
+		mapped_type& operator[] (const key_type& k){
+			return (this->findCompare(this->tree->getRoot(), // start from the root
+				value_type(k, mapped_type() ), // build element to insert or compare
+				true)->getVal().second); // set insert mode to true and get value of mapped_type
+		}
 		#pragma endregion
 
 		#pragma region Operations
-		iterator find (const key_type& k){
-			
+		iterator find (const key_type& k){	
+			return
+			iterator(this->findCompare(this->tree->getRoot(), // tree root
+			value_type(k, mapped_type() ) ) ); // key type to find
 		}
 		#pragma endregion
 
@@ -160,6 +166,29 @@ class map{
 
 		size_type			_size;
 		static size_type	_max_size;
+
+		nodeType	*findCompare(nodeType *root, value_type value, bool insert = false){
+			value_compare	comp( (key_compare()) );
+
+			if (root == NULL)
+				return NULL;
+			else if (!(comp(root->getVal(), value) || comp(value, root->getVal() ) ) )
+				return root;
+			else if (comp(root->getVal(), value) && root->getChild(RIGHT) )
+				return findCompare(root->getChild(RIGHT), value, insert);
+			else if (comp(value, root->getVal() ) && root->getChild(LEFT) )
+				return findCompare(root->getChild(LEFT), value, insert);
+			else if (insert)
+			{
+				std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
+				nodeType	*node = new nodeType(value);
+
+				tree->RBinsert(node, root, comp(root->getVal(), value) ); //insert new node on the right direction
+				return node;
+			}
+			else
+				return NULL;
+		}
 };
 
 template <class Key, class T, class Compare, class Alloc>
@@ -174,13 +203,13 @@ class map<Key,T,Compare,Alloc>::value_compare
 		typedef value_type first_argument_type;
 		typedef value_type second_argument_type;
 		
-		bool operator() (const value_type& x, const value_type& y) const
+		bool operator() (const value_type& x, const value_type& y) const //remove const qualifier?
 		{
 			return comp(x.first, y.first);
 		}
 };
 
 template < class Key, class T, class Compare, class Alloc>
-map<Key, T, Compare, Alloc>::size_type	map<Key, T, Compare, Alloc>::_max_size(230584300921369395);
+typename map<Key, T, Compare, Alloc>::size_type	map<Key, T, Compare, Alloc>::_max_size(230584300921369395);
 
 }

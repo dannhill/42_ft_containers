@@ -86,20 +86,16 @@ int	main(void){
 
 	std::cout << (lel - kek) << std::endl;
 
-	const ft::map<int, std::string>	pippo(kek, lel + 1);
+	ft::map<int, std::string>	pippo(kek, lel + 1);
 
-	ft::map<int, std::string>::const_iterator	itb = pippo.begin();
-	ft::map<int, std::string>::const_iterator	ita = pippo.end();
+	// pippo[7];
 
+	pippo.tree->RBinsert(new RBnode<ft::pair<const int, std::string> >(ft::pair<const int, std::string>(7, std::string() ) ),
+	pippo.tree->find(pippo.tree->getRoot(), ft::pair<const int, std::string>(8, "next") ), LEFT );
 
-	// albero->applyFn(pippo.tree->getRoot(), printNode);
+	// std::cout << pippo.find(7)->first << std::endl;
 
-	for(; itb != pippo.end() ; itb++)
-		std::cout << itb->first << std::endl;
-
-	std::cout << std::endl;
-
-	std::cout << (pippo.end() - pippo.begin()) << std::endl;
+	pippo.tree->applyFn(pippo.tree->getRoot(), printNode);
 
 	delete albero;
 
