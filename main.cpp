@@ -70,8 +70,6 @@ int	main(void){
 
 	albero = randomTree(14);
 
-	albero->RBdelete(albero->find(albero->getRoot(), ft::pair<const int, std::string>(7, "next") ) );
-
 	if (albero->getRoot() != NULL)
 		std::cout << "Root: " << albero->getRoot()->getVal().first << std::endl;
 
@@ -82,18 +80,22 @@ int	main(void){
 	ft::iterator<ft::pair<const int, std::string>, RBtree<ft::pair<const int, std::string> > >	lel(albero);
 
 	kek -= 3;
-	lel += 9;
+	lel += 11;
 
-	std::cout << (lel - kek) << std::endl;
+	std::cout << std::endl;
 
-	ft::map<int, std::string>	pippo(kek, lel + 1);
+	// for(; kek != lel + 1; kek++)
+	// 	std::cout << kek->first << std::endl;
 
-	// pippo[7];
+	ft::map<int, std::string>	pippo;
 
-	pippo.tree->RBinsert(new RBnode<ft::pair<const int, std::string> >(ft::pair<const int, std::string>(7, std::string() ) ),
-	pippo.tree->find(pippo.tree->getRoot(), ft::pair<const int, std::string>(8, "next") ), LEFT );
+	pippo.insert(kek, lel + 1);
 
-	// std::cout << pippo.find(7)->first << std::endl;
+	pippo.erase(pippo.begin() + 4, pippo.end() - 5);
+
+	// std::cout << "first: " << res.first->first << " " << "second: " << res.second << std::endl;
+
+	std::cout << pippo.tree->getRoot()->getVal().first << std::endl;
 
 	pippo.tree->applyFn(pippo.tree->getRoot(), printNode);
 

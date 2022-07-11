@@ -61,7 +61,7 @@ class map{
 
 			for(; first != last; first++, this->_size++)
 			{
-				this->tree->RBinsert(new nodeType(*first), //create new node with same element of first
+				this->tree->RBinsert(new nodeType(*first, RED), //create new node with same element of first
 				this->tree->findMax(this->tree->getRoot() ), //find the current max element in the new tree
 				RIGHT ); //set the new node as the right child
 			}
@@ -153,11 +153,106 @@ class map{
 		}
 		#pragma endregion
 
+		#pragma region Modifiers
+		pair<iterator, bool> insert (const value_type& val){
+			nodeType	*node;
+
+			node = this->findCompare(this->tree->getRoot(), //find element
+				val, // of this value
+				false); //do not insert
+			if (node != NULL)
+				return ft::make_pair(iterator(node), false);
+			else
+			{
+				iterator	ite(this->findCompare(this->tree->getRoot(), val, true) );
+				return ft::make_pair(ite, true);
+			}
+		}
+
+		iterator insert (iterator position, const value_type& val){
+			value_compare	comp( (key_compare()) );
+
+			if ( (position != iterator() //check if position doesn't point to NULL
+				&& position.getPoint().getEnd() != 1) //check if position is not this->end()
+				&& ( position.getPoint().getEnd() == 2 || comp(*position, val) ) //if it's before begin (useless, cause it's only the case of reverse iterators)
+				&& ( (position + 1).getPoint().getEnd() == 1 || comp(val, *(position + 1) ) ) ) //if next is after last (AKA: this->end() )
+			{
+				nodeType	*node = new nodeType(val);
+
+				this->tree->RBinsert(node, //attach newly created node
+				position.getPoint().getNode(), //this position is father
+				RIGHT); // put it as the right child
+			
+				return iterator(node); //return iterator of the newly attached node
+			}
+			else
+				return this->insert(val).first;
+		}
+
+		template <class InputIterator>
+		void insert (InputIterator first, InputIterator last){
+			iterator	hint(this->end() );
+
+			for(; first != last; first++)
+				hint = this->insert(hint, *first);
+
+			return;
+		}
+
+		void erase (iterator position){
+			nodeType	*toDel;
+			if (position.getPoint().getNode() == NULL)
+				return;
+			else if ( (toDel = this->findCompare(this->tree->getRoot(), *position, false) ) == NULL)
+				return;
+			else
+				this->tree->RBdelete(toDel);
+		}
+
+		size_type erase (const key_type& k){
+			iterator	toDel(this->find(k) );
+
+			if (toDel == this->end() )
+				return 0;
+			this->tree->RBdelete(toDel.getPoint().getNode() );
+			return 1;
+		}
+
+		void erase (iterator first, iterator last){
+			for(nodeType *index; first.getPoint().getNode() && first != last;)
+			{
+				index = first.getPoint().getNode();
+				first++;
+				this->tree->RBdelete(index);
+			}
+
+			return;
+		}
+		#pragma endregion
+
 		#pragma region Operations
 		iterator find (const key_type& k){	
-			return
-			iterator(this->findCompare(this->tree->getRoot(), // tree root
-			value_type(k, mapped_type() ) ) ); // key type to find
+			nodeType	*node;
+
+			node = this->findCompare(this->tree->getRoot(), // tree root
+			value_type(k, mapped_type() ) ); //key of element to find
+
+			if (!node)
+				return (this->end() );
+			else
+				return iterator(node);
+		}
+
+		const_iterator find (const key_type& k) const{	
+			nodeType	*node;
+
+			node = this->findCompare(this->tree->getRoot(), // tree root
+			value_type(k, mapped_type() ) ); //key of element to find
+
+			if (!node)
+				return (this->end() );
+			else
+				return const_iterator(node);
 		}
 		#pragma endregion
 
@@ -170,20 +265,17 @@ class map{
 		nodeType	*findCompare(nodeType *root, value_type value, bool insert = false){
 			value_compare	comp( (key_compare()) );
 
-			if (root == NULL)
-				return NULL;
-			else if (!(comp(root->getVal(), value) || comp(value, root->getVal() ) ) )
+			if (root && !(comp(root->getVal(), value) || comp(value, root->getVal() ) ) )
 				return root;
-			else if (comp(root->getVal(), value) && root->getChild(RIGHT) )
+			else if (root && comp(root->getVal(), value) && root->getChild(RIGHT) )
 				return findCompare(root->getChild(RIGHT), value, insert);
-			else if (comp(value, root->getVal() ) && root->getChild(LEFT) )
+			else if (root && comp(value, root->getVal() ) && root->getChild(LEFT) )
 				return findCompare(root->getChild(LEFT), value, insert);
 			else if (insert)
 			{
-				std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
 				nodeType	*node = new nodeType(value);
 
-				tree->RBinsert(node, root, comp(root->getVal(), value) ); //insert new node on the right direction
+				tree->RBinsert(node, root, root ? comp(root->getVal(), value) : RIGHT ); //insert new node on the right direction
 				return node;
 			}
 			else

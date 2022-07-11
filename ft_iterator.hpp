@@ -78,6 +78,10 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return (*this);
 		}
 
+		tpointer<value_type, dstruct> const &	getPoint(void) const{
+			return (this->p);
+		}
+
 		virtual bool	operator==(iterator const & cmp) const{
 			return (static_cast<value_type *>(this->p) == static_cast<value_type *>(cmp.p));
 		}
@@ -210,7 +214,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
 			return ret;
 		}
-	protected:
+	private:
 		tpointer<value_type, dstruct>	p;
 };
 
@@ -897,25 +901,25 @@ class tpointer<value_type, vector<value_type> >{
 		
 		tpointer(vector<value_type> *container){
 			if (container)
-				this->p = &(container->front());
+				this->_p = &(container->front());
 			else
-				this->p = NULL;
+				this->_p = NULL;
 
 			return;
 		}
 
 		tpointer &	operator=(tpointer const & asn){
 			if (asn)
-				this->p = &(asn->front());
+				this->_p = &(asn->front());
 
 			return (*this);
 		}
 
 		operator value_type*() const{
-			return p;
+			return this->_p;
 		}
 	private:
-		value_type	*p;
+		value_type	*_p;
 };
 
 template<typename value_type, class dstruct>
@@ -946,6 +950,16 @@ class tpointer{
 				this->_p = cpy->getRoot();
 
 			return;
+		}
+
+		nodeType	*getNode(void) const{
+			if (this->getEnd() != 0)
+				return NULL;
+			return (this->_p);
+		}
+
+		short	getEnd(void) const{
+			return (this->_end);
 		}
 
 		operator value_type*() const{

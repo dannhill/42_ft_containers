@@ -179,6 +179,9 @@ class RBtree{
 
 		#pragma region RB tree Delete
 		static void	RBdeleteRoot(RBtree<T>* Tree, RBnode<T>* N){
+			if (!N)
+				return;
+			
 			RBnode<T>	*P = N->parent;  // -> parent node of N
 			
 			//case: N is root node and it's a 1 element tree
