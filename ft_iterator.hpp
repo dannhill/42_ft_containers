@@ -214,7 +214,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
 			return ret;
 		}
-	private:
+	protected:
 		tpointer<value_type, dstruct>	p;
 };
 

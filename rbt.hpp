@@ -96,7 +96,7 @@ class RBtree{
 
 		//desturctor
 		~RBtree(void){
-			this->applyFn(this->getRoot(), deleteNode);
+			this->clear();
 			return;
 		}
 
@@ -435,6 +435,13 @@ class RBtree{
 		static void	deleteNode(RBnode<T> *node){
 			delete node;
 			node = NULL;
+			return;
+		}
+
+		void	clear(void){
+			this->applyFn(this->getRoot(), deleteNode);
+			this->root = NULL;
+
 			return;
 		}
 

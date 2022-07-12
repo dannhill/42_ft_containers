@@ -228,6 +228,39 @@ class map{
 
 			return;
 		}
+
+		void swap (map& x){
+			RBtree<value_type>	*temp;
+			size_type			tsize;
+
+			temp = x.tree;
+			tsize = x._size;
+
+			x.tree = this->tree;
+			x._size = this->_size;
+
+			this->tree = temp;
+			this->_size = tsize;
+
+			return;
+		}
+
+		void clear(){
+			this->tree->clear();
+
+			this->_size = 0;
+			return;
+		}
+		#pragma endregion
+
+		#pragma region Observers
+		key_compare key_comp() const{
+			return key_compare();
+		}
+
+		value_compare value_comp() const{
+			return value_compare();
+		}
 		#pragma endregion
 
 		#pragma region Operations
@@ -254,15 +287,20 @@ class map{
 			else
 				return const_iterator(node);
 		}
+
+		size_type count (const key_type& k) const{
+			return static_cast<size_type>(this->find(k) != this->end() );
+		}
 		#pragma endregion
 
 	public: //must change to private(or protected)
 		RBtree<value_type>	*tree;
 
-		size_type			_size;
-		static size_type	_max_size;
 
-		nodeType	*findCompare(nodeType *root, value_type value, bool insert = false){
+		size_type			_size;
+		static const size_type	_max_size;
+
+		nodeType	*findCompare(nodeType *root, value_type value, bool insert = false) const{
 			value_compare	comp( (key_compare()) );
 
 			if (root && !(comp(root->getVal(), value) || comp(value, root->getVal() ) ) )
@@ -302,6 +340,6 @@ class map<Key,T,Compare,Alloc>::value_compare
 };
 
 template < class Key, class T, class Compare, class Alloc>
-typename map<Key, T, Compare, Alloc>::size_type	map<Key, T, Compare, Alloc>::_max_size(230584300921369395);
+const typename map<Key, T, Compare, Alloc>::size_type	map<Key, T, Compare, Alloc>::_max_size(230584300921369395);
 
 }

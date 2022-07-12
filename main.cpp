@@ -99,6 +99,8 @@ int	main(void){
 
 	pippo.tree->applyFn(pippo.tree->getRoot(), printNode);
 
+	std::cout << pippo.count(3) << std::endl;
+
 	delete albero;
 
 	return 0;
