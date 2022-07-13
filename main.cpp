@@ -97,9 +97,9 @@ int	main(void){
 
 	std::cout << pippo.tree->getRoot()->getVal().first << std::endl;
 
-	pippo.tree->applyFn(pippo.tree->getRoot(), printNode);
+	std::cout << (pippo.equal_range(2).first)->first << std::endl;
 
-	std::cout << pippo.count(3) << std::endl;
+	pippo.tree->applyFn(pippo.tree->getRoot(), printNode);
 
 	delete albero;
 

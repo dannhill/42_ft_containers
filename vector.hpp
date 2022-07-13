@@ -10,7 +10,19 @@
 namespace ft
 {
 
-template<typename T, class Alloc /*= std::allocator<T>*/ >
+template<typename T, class dstruct>
+class iterator;
+
+template<typename T, class dstruct>
+class const_iterator;
+
+template<typename T, class dstruct>
+class	reverse_iterator;
+
+template<typename T, class dstruct>
+class const_reverse_iterator;
+
+template<typename T, class Alloc = std::allocator<T> >
 class vector
 {
 	public:
