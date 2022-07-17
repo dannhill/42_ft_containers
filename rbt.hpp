@@ -335,13 +335,13 @@ class RBtree{
 		RBnode<T, Alloc>	*find(RBnode<T, Alloc> *root, T value){
 			if (root == NULL)
 				return NULL;
-			if (value == root->getVal())
+			if (value == *(root->getVal() ) )
 				return root;
 
 			RBnode<T, Alloc>	*res;
 
 			res = find(root->child[0], value);
-			if (res == NIL || res->getVal() != value)
+			if (res == NIL || *(res->getVal() ) != value)
 				res = find(root->child[1], value);
 			
 			return res;
@@ -350,9 +350,9 @@ class RBtree{
 		RBnode<T, Alloc>	*findCompare(RBnode<T, Alloc> *root, T value, bool (*less)(const T& x, const T& y)){
 			if (root == NULL)
 				return NULL;
-			if (!(less(root->getVal(), value) || less(value, root->getVal() ) ) )
+			if (!(less(*(root->getVal() ), value) || less(value, *(root->getVal() ) ) ) )
 				return root;
-			else if (less(root->getVal(), value) && root->getChild(RIGHT) )
+			else if (less(*(root->getVal() ), value) && root->getChild(RIGHT) )
 				return findCompare(root->getChild(RIGHT), value, less);
 			else
 				return findCompare(root->getChild(LEFT), value, less);
@@ -360,30 +360,18 @@ class RBtree{
 			return NULL;
 		}
 
-		static RBnode<T, Alloc>	*findNext(RBnode<T, Alloc> *root){
-			// if (root == NULL)
-			// 	return NULL;
-			// if (value == root->getVal())
-			// 	return (root->child[1] * (root->child[1] != NULL)
-			// 	+ root->parent * (!childDir(root)));
-
-			// RBnode<T, Alloc>	*res;
-
-			// res = find(root->child[0], value);
-			// if (res == NIL || res->getVal() != value)
-			// 	res = find(root->child[1], value);
-			
+		static RBnode<T, Alloc>	*findNext(RBnode<T, Alloc> *root){		
 			if (!root)
 				return NULL;
 			if (root->child[RIGHT])
-				return (findMin(root->child[RIGHT]));
+				return (findMin(root->child[RIGHT]) );
 			if (root->parent && childDir(root) == LEFT)
 				return (root->parent);
 
 			do
 			{
 				root = root->parent;
-			} while (root && root->parent && childDir(root));
+			} while (root && root->parent && childDir(root) );
 
 			if (root)
 				return (root->parent);
@@ -395,7 +383,7 @@ class RBtree{
 			if (!root)
 				return NULL;
 			if (root->child[LEFT])
-				return (findMax(root->child[LEFT]));
+				return (findMax(root->child[LEFT]) );
 			if (root->parent && childDir(root) == RIGHT)
 				return (root->parent);
 

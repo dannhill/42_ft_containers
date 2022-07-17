@@ -89,7 +89,16 @@ class map{
 
 		#pragma region operator=
 		map& operator= (const map& x){
-			(void)x;
+			this->_size = x.size;
+
+			const_iterator	ite(x.begin());
+
+			for(; ite != x.end(); ite++)
+			{ //curly brackets for clearer code
+				this->tree->RBinsert(new nodeType(*ite), //create new node with same element of first
+					this->tree->findMax(this->tree->getRoot()), //find the current max element in the new tree
+					RIGHT); //set the new node as the right child
+			}
 
 			return (*this);
 		}
@@ -181,6 +190,8 @@ class map{
 				position.getPoint().getNode(), //this position is father
 				RIGHT); // put it as the right child
 			
+				this->_size++;
+
 				return iterator(node); //return iterator of the newly attached node
 			}
 			else
@@ -205,19 +216,24 @@ class map{
 				return;
 			else
 				this->tree->RBdelete(toDel);
+		
+			this->_size--;
+
+			return;
 		}
 
 		size_type erase (const key_type& k){
-			iterator	toDel(this->find(k) );
+			iterator	toDel(this->find(k) ); // find node by key
 
-			if (toDel == this->end() )
+			if (toDel == this->end() ) // if not found, return
 				return 0;
-			this->tree->RBdelete(toDel.getPoint().getNode() );
-			return 1;
+			this->tree->RBdelete(toDel.getPoint().getNode() ); //delete element
+			this->_size--; // decrease map size
+			return 1; // return number of deleted elements
 		}
 
 		void erase (iterator first, iterator last){
-			for(nodeType *index; first.getPoint().getNode() && first != last;)
+			for(nodeType *index; first.getPoint().getNode() && first != last; this->_size--)
 			{
 				index = first.getPoint().getNode();
 				first++;
@@ -339,7 +355,7 @@ class map{
 		size_type			_size;
 		static const size_type	_max_size;
 
-		nodeType	*findCompare(nodeType *root, value_type value, short insert = 0) const{
+		nodeType	*findCompare(nodeType *root, value_type value, short insert = 0){
 			value_compare	comp( (key_compare()) );
 
 			if (root && !(comp(*(root->getVal() ), value) || comp(value, *(root->getVal() ) ) )
@@ -354,6 +370,9 @@ class map{
 				nodeType	*node = new nodeType(value);
 
 				tree->RBinsert(node, root, root ? comp(*(root->getVal() ), value) : RIGHT ); //insert new node on the right direction
+				
+				this->_size++; //increase the size of the map by 1
+				
 				return node;
 			}
 			else if (insert >= 2)
