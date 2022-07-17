@@ -1,4 +1,5 @@
 #pragma once
+#include "ft_containers.hpp"
 #include <memory>
 #include <cstdio> // library used only to define "size_t"
 #include <iostream> // library used only to debug printing
@@ -10,19 +11,19 @@
 namespace ft
 {
 
-template<typename T, class dstruct>
-class iterator;
+// template<typename T, class dstruct>
+// class iterator;
 
-template<typename T, class dstruct>
-class const_iterator;
+// template<typename T, class dstruct>
+// class const_iterator;
 
-template<typename T, class dstruct>
-class	reverse_iterator;
+// template<typename T, class dstruct>
+// class	reverse_iterator;
 
-template<typename T, class dstruct>
-class const_reverse_iterator;
+// template<typename T, class dstruct>
+// class const_reverse_iterator;
 
-template<typename T, class Alloc = std::allocator<T> >
+template<typename T, class Alloc>
 class vector
 {
 	public:

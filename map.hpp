@@ -1,6 +1,6 @@
 
 #pragma once
-#include <memory>
+#include "ft_containers.hpp"
 #include <cstdio> // library used only to define "size_t"
 #include <iostream> // library used only to debug printing
 #include <stdexcept>
@@ -13,10 +13,8 @@
 namespace ft
 {
 
-
-
-template < class Key, class T, class Compare = std::less<Key>,
-	class Alloc = std::allocator<pair<const Key,T> > >
+template < class Key, class T, class Compare,
+	class Alloc >
 class map{
 	public:
 		typedef Key key_type;
@@ -24,19 +22,19 @@ class map{
 		typedef pair<const key_type,mapped_type> value_type;
 		typedef Compare key_compare;
 		class	value_compare;
-		typedef std::allocator<value_type> allocator_type;
+		typedef Alloc allocator_type;
 		typedef typename allocator_type::reference reference;
 		typedef typename allocator_type::const_reference const_reference;
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::const_pointer const_pointer;
-		typedef typename ft::iterator<value_type, RBtree<value_type> > iterator;
-		typedef typename ft::const_iterator<value_type, RBtree<value_type> > const_iterator;
-		typedef typename ft::reverse_iterator<value_type, RBtree<value_type> > reverse_iterator;
-		typedef typename ft::const_reverse_iterator<value_type, RBtree<value_type> > const_reverse_iterator;
-		typedef typename ft::iterator<value_type, RBtree<value_type> >::difference_type difference_type;
+		typedef typename ft::iterator<value_type, RBtree<value_type, allocator_type> > iterator;
+		typedef typename ft::const_iterator<value_type, RBtree<value_type, allocator_type> > const_iterator;
+		typedef typename ft::reverse_iterator<value_type, RBtree<value_type, allocator_type> > reverse_iterator;
+		typedef typename ft::const_reverse_iterator<value_type, RBtree<value_type, allocator_type> > const_reverse_iterator;
+		typedef typename ft::iterator<value_type, RBtree<value_type, allocator_type> >::difference_type difference_type;
 		typedef size_t size_type;
 		//optional
-		typedef RBnode<value_type> nodeType;
+		typedef RBnode<value_type, allocator_type> nodeType;
 
 		#pragma region (constructor)
 		explicit map (const key_compare& comp = key_compare(),
@@ -44,7 +42,7 @@ class map{
 			(void)comp;
 			(void)alloc;
 
-			tree = new RBtree<value_type>;
+			tree = new RBtree<value_type, allocator_type>;
 
 			return;
 		}
@@ -57,7 +55,7 @@ class map{
 			(void)comp;
 			(void)alloc;
 
-			tree = new RBtree<value_type>;
+			tree = new RBtree<value_type, allocator_type>;
 
 			for(; first != last; first++, this->_size++)
 			{
@@ -230,7 +228,7 @@ class map{
 		}
 
 		void swap (map& x){
-			RBtree<value_type>	*temp;
+			RBtree<value_type, allocator_type>	*temp;
 			size_type			tsize;
 
 			temp = x.tree;
@@ -336,8 +334,7 @@ class map{
 		#pragma endregion
 
 	public: //must change to private(or protected)
-		RBtree<value_type>	*tree;
-
+		RBtree<value_type, allocator_type>	*tree;
 
 		size_type			_size;
 		static const size_type	_max_size;
@@ -345,23 +342,23 @@ class map{
 		nodeType	*findCompare(nodeType *root, value_type value, short insert = 0) const{
 			value_compare	comp( (key_compare()) );
 
-			if (root && !(comp(root->getVal(), value) || comp(value, root->getVal() ) )
+			if (root && !(comp(*(root->getVal() ), value) || comp(value, *(root->getVal() ) ) )
 				&& insert != 3)
 				return root;
-			else if (root && comp(root->getVal(), value) && root->getChild(RIGHT) )
+			else if (root && comp(*(root->getVal() ), value) && root->getChild(RIGHT) )
 				return findCompare(root->getChild(RIGHT), value, insert);
-			else if (root && comp(value, root->getVal() ) && root->getChild(LEFT) )
+			else if (root && comp(value, *(root->getVal() ) ) && root->getChild(LEFT) )
 				return findCompare(root->getChild(LEFT), value, insert);
 			else if (insert == 1)
 			{
 				nodeType	*node = new nodeType(value);
 
-				tree->RBinsert(node, root, root ? comp(root->getVal(), value) : RIGHT ); //insert new node on the right direction
+				tree->RBinsert(node, root, root ? comp(*(root->getVal() ), value) : RIGHT ); //insert new node on the right direction
 				return node;
 			}
 			else if (insert >= 2)
 			{
-				if (comp(root->getVal(), value))
+				if (comp(*(root->getVal() ), value))
 					return (tree->findNext(root));
 				//else
 				return root;

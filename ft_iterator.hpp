@@ -1,39 +1,37 @@
 #pragma once
+#include "ft_containers.hpp"
 #include <iterator>// library used only for base iterator
 #include <cstddef>// library used only to include ptrdiff_t
 #include <iostream>// library used only to print debug
 #include "ft_type_traits.hpp"
-#include "vector.hpp"
-#include "rbt.hpp"
+// #include "vector.hpp"
+// #include "rbt.hpp"
 #include <cmath>
 
 namespace ft
 {
 
 #pragma region Forward Declarations
-// template<typename T, class Alloc = std::allocator<T> >
-// class vector;
-
 // template<typename T>
 // class RBnode;
 
 // template<typename T>
 // class RBtree;
 
-template<typename T, class dstruct = vector<T> >
-class const_iterator;
+// template<typename T, class dstruct = vector<T> >
+// class const_iterator;
 
-template<typename T, class dstruct = vector<T> >
-class iterator;
+// template<typename T, class dstruct = vector<T> >
+// class iterator;
 
-template<typename T, class dstruct = vector<T> >
-class reverse_iterator;
+// template<typename T, class dstruct = vector<T> >
+// class reverse_iterator;
 
-template<typename T, class dstruct = vector<T> >
-class const_reverse_iterator;
+// template<typename T, class dstruct = vector<T> >
+// class const_reverse_iterator;
 
-template<typename value_type, class dstruct = vector<value_type> >
-class tpointer;
+// template<typename value_type, class dstruct = vector<value_type> >
+// class tpointer;
 #pragma endregion
 
 #pragma region Random Access Iterator
@@ -929,22 +927,22 @@ class tpointer{
 	typedef typename dstruct::nodeType nodeType;
 
 	public:
-		tpointer<value_type, RBtree<value_type> >(short end = 0) : _p(NULL), _end(end){
+		tpointer(short end = 0) : _p(NULL), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(nodeType *node, short end = 0) : _p(node), _end(end){
+		tpointer(nodeType *node, short end = 0) : _p(node), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(point const & cpy, short end = 0) : _p(cpy._p), _end(end){
+		tpointer(point const & cpy, short end = 0) : _p(cpy._p), _end(end){
 
 			return;
 		}
 
-		tpointer<value_type, RBtree<value_type> >(RBtree<value_type> *cpy, short end = 0) : _end(end){
+		tpointer(RBtree<value_type> *cpy, short end = 0) : _end(end){
 			if (cpy == NULL)
 				this->_p = NULL;
 			else
@@ -966,7 +964,7 @@ class tpointer{
 		operator value_type*() const{
 			if (this->_p == NULL || this->_end)
 				return NULL;
-			return &(this->_p->getVal());
+			return (this->_p->getVal());
 		}
 
 		point &	operator=(point const & asn){

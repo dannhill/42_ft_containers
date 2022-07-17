@@ -21,12 +21,12 @@
 #include <stdlib.h>
 #include <cstdlib>
 
-void	printNode(RBnode<ft::pair<int, std::string> > *node){
-	std::cout << node->getVal().first << ": " << node->getColor() << std::endl;
-}
+// void	printNode(RBnode<ft::pair<int, std::string> > *node){
+// 	std::cout << node->getVal()->first << ": " << node->getColor() << std::endl;
+// }
 
 void	printNode(RBnode<ft::pair<const int, std::string> > *node){
-	std::cout << node->getVal().first << ": " << node->getColor() << std::endl;
+	std::cout << node->getVal()->first << ": " << node->getColor() << std::endl;
 }
 
 RBtree<ft::pair<const int, std::string> >	*randomTree(int size){
@@ -44,22 +44,22 @@ RBtree<ft::pair<const int, std::string> >	*randomTree(int size){
 	return tree;
 }
 
-RBtree<const int>	*randomTree(int size, bool con){
-	RBnode<const int>	*root = new RBnode<const int>(0, BLACK);
-	RBtree<const int>	*tree = new RBtree<const int>(root);
-	(void)con;
+// RBtree<const int>	*randomTree(int size, bool con){
+// 	RBnode<const int>	*root = new RBnode<const int>(0, BLACK);
+// 	RBtree<const int>	*tree = new RBtree<const int>(root);
+// 	(void)con;
 
 
-	for (int i = 1; i < size; i++){
-		RBnode<const int>	*temp;
-		if ((temp = tree->find(tree->getRoot(), i - 1))->getChild(RIGHT) == NIL)
-		{
-			tree->RBinsert(new RBnode<const int>(i, RED), temp, RIGHT);
-		}
-	}
+// 	for (int i = 1; i < size; i++){
+// 		RBnode<const int>	*temp;
+// 		if ((temp = tree->find(tree->getRoot(), i - 1))->getChild(RIGHT) == NIL)
+// 		{
+// 			tree->RBinsert(new RBnode<const int>(i, RED), temp, RIGHT);
+// 		}
+// 	}
 
-	return tree;
-}
+// 	return tree;
+// }
 
 int	main(void){
 	RBtree<ft::pair<const int, std::string> >	*albero;
@@ -71,7 +71,7 @@ int	main(void){
 	albero = randomTree(14);
 
 	if (albero->getRoot() != NULL)
-		std::cout << "Root: " << albero->getRoot()->getVal().first << std::endl;
+		std::cout << "Root: " << albero->getRoot()->getVal()->first << std::endl;
 
 	albero->applyFn(albero->getRoot(), printNode);
 
@@ -95,7 +95,7 @@ int	main(void){
 
 	// std::cout << "first: " << res.first->first << " " << "second: " << res.second << std::endl;
 
-	std::cout << pippo.tree->getRoot()->getVal().first << std::endl;
+	std::cout << pippo.tree->getRoot()->getVal()->first << std::endl;
 
 	std::cout << (pippo.equal_range(2).first)->first << std::endl;
 

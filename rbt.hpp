@@ -1,6 +1,8 @@
 //red-black tree implementation
 #pragma once
 
+#include <memory>
+
 #include <cassert>
 #include <stdexcept>
 #include <functional>
@@ -15,36 +17,55 @@
 enum color_e { BLACK, RED, DBLACK};
 typedef	enum color_e color_t;
 
-template<typename T>
-class RBnode;
+// template<typename T, class Alloc = std::allocator<T> >
+// class RBnode;
 
-template<typename T>
-class RBtree;
+// template<typename T, class Alloc = std::allocator<T> >
+// class RBtree;
 
 #pragma region RB tree - Node
-template<typename T>
+template<typename T, class Alloc>
 class RBnode{
 	public:
 		typedef T value_type;
+		typedef Alloc allocator_type;
 
-		RBnode(void) : parent(NULL), val(T()), color(RED){
+		RBnode(void) : parent(NULL), val(), color(RED){
+			allocator_type	alloc = allocator_type();
+
+			val = alloc.allocate(1);
+			alloc.construct(val, value_type() );
 			this->child[0] = NULL;
 			this->child[1] = NULL;
 
 			return;
 		}
 
-		RBnode(value_type iniz) : parent(NULL), val(iniz), color(RED){
+		RBnode(value_type iniz) : parent(NULL), val(), color(RED){
+			allocator_type	alloc = allocator_type();
+
+			val = alloc.allocate(1);
+			alloc.construct(val, iniz);
 			this->child[0] = NULL;
 			this->child[1] = NULL;
 			
 			return;
 		}
 
-		RBnode(value_type iniz, color_t col) : parent(NULL), val(iniz), color(col){
+		RBnode(value_type iniz, color_t col) : parent(NULL), val(), color(col){
+			allocator_type	alloc = allocator_type();
+
+			val = alloc.allocate(1);
+			alloc.construct(val, iniz);
 			this->child[0] = NULL;
 			this->child[1] = NULL;
 			
+			return;
+		}
+
+		~RBnode(void){
+			defal.destroy(val);
+			defal.deallocate(val, 1);
 			return;
 		}
 
@@ -57,11 +78,11 @@ class RBnode{
 			return (*this);
 		}
 
-		value_type &	getVal(void){
+		value_type	*getVal(void){
 			return this->val;
 		}
 
-		RBnode<T>	*getChild(size_t n){
+		RBnode<T, Alloc>	*getChild(size_t n){
 			if (n != 0 && n != 1)
 				throw std::exception();
 			return this->child[n];
@@ -72,25 +93,26 @@ class RBnode{
 		}
 
 	private:
-		RBnode<T>	*parent;
-		RBnode<T>	*child[2];
-		value_type	val;
+		allocator_type	defal;
+		RBnode<T, Alloc>	*parent;
+		RBnode<T, Alloc>	*child[2];
+		value_type	*val;
 		color_t color;
 
 		friend class RBtree<T>;
 };
 #pragma endregion
 
-template<typename T>
+template<typename T, class Alloc>
 class RBtree{
 	public:
-		typedef RBnode<T> nodeType;
+		typedef RBnode<T, Alloc> nodeType;
 		
 		RBtree(void) : root(NIL){
 			return;
 		}
 
-		RBtree(RBnode<T> *iniz) : root(iniz){
+		RBtree(RBnode<T, Alloc> *iniz) : root(iniz){
 			return;
 		}
 
@@ -101,10 +123,10 @@ class RBtree{
 		}
 
 		#pragma region RB tree Rotate
-		static RBnode<T>	*RotateDirRoot(RBtree<T> *Tree, RBnode<T> *Parent, short dir){
-			RBnode<T>	*Gran = Parent->parent;
-			RBnode<T>	*Sib = Parent->child[1 - dir];
-			RBnode<T>	*C;
+		static RBnode<T, Alloc>	*RotateDirRoot(RBtree<T> *Tree, RBnode<T, Alloc> *Parent, short dir){
+			RBnode<T, Alloc>	*Gran = Parent->parent;
+			RBnode<T, Alloc>	*Sib = Parent->child[1 - dir];
+			RBnode<T, Alloc>	*C;
 
 			assert(Sib != NIL);
 			
@@ -122,21 +144,21 @@ class RBtree{
 			return Sib;
 		}
 
-		RBnode<T>	*RotateDir(RBnode<T> *Parent, short dir){
+		RBnode<T, Alloc>	*RotateDir(RBnode<T, Alloc> *Parent, short dir){
 			return RotateDirRoot(this, Parent, dir);
 		}
 
-		RBnode<T>	*RotateLeft(RBnode<T> *Parent){
+		RBnode<T, Alloc>	*RotateLeft(RBnode<T, Alloc> *Parent){
 			return RotateDir(Parent, LEFT);
 		}
 
-		RBnode<T>	*RotateRight(RBnode<T> *Parent){
+		RBnode<T, Alloc>	*RotateRight(RBnode<T, Alloc> *Parent){
 			return RotateDir(Parent, RIGHT);
 		}
 		#pragma endregion
 
 		#pragma region RB tree Insert
-		static void	RBinsertRoot(RBtree<T> *Tree, RBnode<T> *New, RBnode<T> *Parent, short dir){
+		static void	RBinsertRoot(RBtree<T> *Tree, RBnode<T, Alloc> *New, RBnode<T, Alloc> *Parent, short dir){
 			
 			if (Parent == NULL){
 				New->color = ::BLACK;
@@ -144,8 +166,8 @@ class RBtree{
 				return;
 			}
 			
-			RBnode<T>	*Gran;
-			RBnode<T>	*Unc;
+			RBnode<T, Alloc>	*Gran;
+			RBnode<T, Alloc>	*Unc;
 
 			New->color = RED;
 			New->left  = NIL;
@@ -171,18 +193,18 @@ class RBtree{
 			return;
 		}
 
-		void	RBinsert(RBnode<T> *New, RBnode<T> *Parent, short dir){
+		void	RBinsert(RBnode<T, Alloc> *New, RBnode<T, Alloc> *Parent, short dir){
 			RBinsertRoot(this, New, Parent, dir);
 			return;
 		}
 		#pragma endregion
 
 		#pragma region RB tree Delete
-		static void	RBdeleteRoot(RBtree<T>* Tree, RBnode<T>* N){
+		static void	RBdeleteRoot(RBtree<T>* Tree, RBnode<T, Alloc>* N){
 			if (!N)
 				return;
 			
-			RBnode<T>	*P = N->parent;  // -> parent node of N
+			RBnode<T, Alloc>	*P = N->parent;  // -> parent node of N
 			
 			//case: N is root node and it's a 1 element tree
 			if (N->getChild(LEFT) == NIL && N->getChild(RIGHT) == NIL && P == NULL)
@@ -196,10 +218,10 @@ class RBtree{
 			//case: N is tree or subtree root with 2 non-null children or it's 
 			if (N->getChild(LEFT) != NIL && N->getChild(RIGHT) != NIL)
 			{
-				RBnode<T>	*swap;
+				RBnode<T, Alloc>	*swap;
 
 				swap = findMax(N->child[LEFT]);
-				const_cast<typename ft::remove_const<T>::type &>(N->val) = swap->getVal();
+				N->val = swap->getVal();
 
 				RBdeleteRoot(Tree, swap);
 
@@ -212,7 +234,7 @@ class RBtree{
 			//case: New has exactly one child
 			if ((N->getChild(LEFT) != NIL || N->getChild(RIGHT) != NIL) && (N->getChild(LEFT) == NIL || N->getChild(RIGHT) == NIL))
 			{
-				RBnode<T>	*child(NULL);
+				RBnode<T, Alloc>	*child(NULL);
 
 				if (N->getChild(LEFT) != NIL)
 					child = N->getChild(LEFT);
@@ -240,9 +262,9 @@ class RBtree{
 				return;
 			}
 			
-			RBnode<T>	*S;  // -> sibling of N
-			RBnode<T>	*C;  // -> close   nephew
-			RBnode<T>	*D;  // -> distant nephew
+			RBnode<T, Alloc>	*S;  // -> sibling of N
+			RBnode<T, Alloc>	*C;  // -> close   nephew
+			RBnode<T, Alloc>	*D;  // -> distant nephew
 
 			//remove node from memory, and dangling pointer
 			P->child[dir] = NULL;
@@ -305,18 +327,18 @@ class RBtree{
 			return;
 		}
 
-		void	RBdelete(RBnode<T>* New){
+		void	RBdelete(RBnode<T, Alloc>* New){
 			return RBdeleteRoot(this, New);
 		}
 		#pragma endregion
 
-		RBnode<T>	*find(RBnode<T> *root, T value){
+		RBnode<T, Alloc>	*find(RBnode<T, Alloc> *root, T value){
 			if (root == NULL)
 				return NULL;
 			if (value == root->getVal())
 				return root;
 
-			RBnode<T>	*res;
+			RBnode<T, Alloc>	*res;
 
 			res = find(root->child[0], value);
 			if (res == NIL || res->getVal() != value)
@@ -325,7 +347,7 @@ class RBtree{
 			return res;
 		}
 
-		RBnode<T>	*findCompare(RBnode<T> *root, T value, bool (*less)(const T& x, const T& y)){
+		RBnode<T, Alloc>	*findCompare(RBnode<T, Alloc> *root, T value, bool (*less)(const T& x, const T& y)){
 			if (root == NULL)
 				return NULL;
 			if (!(less(root->getVal(), value) || less(value, root->getVal() ) ) )
@@ -338,14 +360,14 @@ class RBtree{
 			return NULL;
 		}
 
-		static RBnode<T>	*findNext(RBnode<T> *root){
+		static RBnode<T, Alloc>	*findNext(RBnode<T, Alloc> *root){
 			// if (root == NULL)
 			// 	return NULL;
 			// if (value == root->getVal())
 			// 	return (root->child[1] * (root->child[1] != NULL)
 			// 	+ root->parent * (!childDir(root)));
 
-			// RBnode<T>	*res;
+			// RBnode<T, Alloc>	*res;
 
 			// res = find(root->child[0], value);
 			// if (res == NIL || res->getVal() != value)
@@ -369,7 +391,7 @@ class RBtree{
 			return NULL;
 		}
 
-		static RBnode<T>	*findPrev(RBnode<T> *root){
+		static RBnode<T, Alloc>	*findPrev(RBnode<T, Alloc> *root){
 			if (!root)
 				return NULL;
 			if (root->child[LEFT])
@@ -388,7 +410,7 @@ class RBtree{
 			return NULL;
 		}
 
-		static RBnode<T>	*findMax(RBnode<T>	*subtree)
+		static RBnode<T, Alloc>	*findMax(RBnode<T, Alloc>	*subtree)
 		{
 			if (subtree == NULL)
 				return NULL;
@@ -398,7 +420,7 @@ class RBtree{
 			return findMax(subtree->child[RIGHT]);
 		}
 
-		static RBnode<T>	*findMin(RBnode<T>	*subtree)
+		static RBnode<T, Alloc>	*findMin(RBnode<T, Alloc>	*subtree)
 		{
 			if (subtree == NULL)
 				throw std::exception();
@@ -408,7 +430,7 @@ class RBtree{
 			return findMin(subtree->child[LEFT]);
 		}
 
-		void	applyFn(RBnode<T> *root, void(*func)(RBnode<T> *val)){
+		void	applyFn(RBnode<T, Alloc> *root, void(*func)(RBnode<T, Alloc> *val)){
 			if (root == NULL)
 				return;
 
@@ -419,20 +441,20 @@ class RBtree{
 			return;
 		}
 
-		RBnode<T>	*getRoot(void) const{
+		RBnode<T, Alloc>	*getRoot(void) const{
 			if (!this->root)
 				return NULL;
 			return (this->root);
 		}
 
-		static inline short	childDir(RBnode<T> *New){
+		static inline short	childDir(RBnode<T, Alloc> *New){
 			if (New == New->parent->right)
 				return RIGHT;
 			else
 				return LEFT;
 		}
 
-		static void	deleteNode(RBnode<T> *node){
+		static void	deleteNode(RBnode<T, Alloc> *node){
 			delete node;
 			node = NULL;
 			return;
@@ -446,15 +468,15 @@ class RBtree{
 		}
 
 	private:
-		RBnode<T>	*root;
+		RBnode<T, Alloc>	*root;
 
 		#pragma region Insert Cases
-		static inline void	icase4(RBnode<T> *Parent){
+		static inline void	icase4(RBnode<T, Alloc> *Parent){
 			Parent->color = BLACK;
 			return;
 		}
 
-		inline void	icase56(RBnode<T> *New, RBnode<T> *Parent, RBnode<T> *Gran, short dir){ //make static?
+		inline void	icase56(RBnode<T, Alloc> *New, RBnode<T, Alloc> *Parent, RBnode<T, Alloc> *Gran, short dir){ //make static?
 			if (New == Parent->child[1 - dir]){
 				this->RotateDir(Parent, dir);
 				New = Parent;
@@ -467,7 +489,7 @@ class RBtree{
 		}
 		#pragma endregion
 
-		static inline void	dcase5(RBtree<T> *Tree, RBnode<T> *P, RBnode<T> *S, RBnode<T> *C, RBnode<T> *D, short dir){
+		static inline void	dcase5(RBtree<T> *Tree, RBnode<T, Alloc> *P, RBnode<T, Alloc> *S, RBnode<T, Alloc> *C, RBnode<T, Alloc> *D, short dir){
 			// C red && S+D black: D5
 			RotateDirRoot(Tree, S, !dir); // S is never the root
 			S->color = ::RED;
@@ -480,7 +502,7 @@ class RBtree{
 			return;
 		}
 
-		static inline void	dcase6(RBtree<T> *Tree, RBnode<T> *P, RBnode<T> *S, RBnode<T> *D, short dir){
+		static inline void	dcase6(RBtree<T> *Tree, RBnode<T, Alloc> *P, RBnode<T, Alloc> *S, RBnode<T, Alloc> *D, short dir){
 			// D red && S black: D6
 			RotateDirRoot(Tree, P, dir); // P may be the root
 			S->color = P->color;
@@ -489,7 +511,7 @@ class RBtree{
 			return; // deletion complete
 		}
 
-		friend class RBnode<T>;
+		friend class RBnode<T, Alloc>;
 };
 
 
