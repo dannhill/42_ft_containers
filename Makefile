@@ -1,4 +1,4 @@
-NAME	=	ft_containers
+NAME	=	containers
 
 SRCS	:=	$(wildcard *.cpp)
 
@@ -33,6 +33,6 @@ re:	fclean all
 
 apnd:
 		$(eval CFLAGS += -ggdb3 -fsanitize=address -g)
-		$(eval NAME = ft_containers_DEBUG)
+		$(eval NAME = containers_DEBUG)
 
 .PHONY: all, debug, clean, fclean, re, apnd
