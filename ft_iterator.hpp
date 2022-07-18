@@ -914,6 +914,13 @@ class tpointer<value_type, vector<value_type> >{
 			return (*this);
 		}
 
+		tpointer &	operator=(value_type *asn){
+			if (asn)
+				this->_p = asn;
+
+			return (*this);
+		}
+
 		operator value_type*() const{
 			return this->_p;
 		}

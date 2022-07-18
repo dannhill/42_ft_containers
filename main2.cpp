@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 	for (int i = 0; i < COUNT; ++i)
 	{
 		const int	lmao = rand();
-		map_int.insert(ft::make_pair(lmao, rand()));
+		map_int.insert(ft::pair<const int, int>(lmao, rand()));
 	}
 
 	int sum = 0;

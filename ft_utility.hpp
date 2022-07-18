@@ -22,8 +22,8 @@ struct pair{
 			return;
 		}
 
-		// pair & operator(){
-		// 	return (make_pair(const first_type, second_type) );
+		// operator pair<const first_type, second_type>(){
+		// 	return (pair<const first_type, second_type>(const first_type, second_type) );
 		// }
 
 		//temporarily removed const qualifier. Must change pair allocation to dynamic in RBT nodes and tree
