@@ -1,5 +1,5 @@
 #pragma once
-#include "ft_containers.hpp"
+#include "containers.hpp"
 #include <iterator>// library used only for base iterator
 #include <cstddef>// library used only to include ptrdiff_t
 #include <iostream>// library used only to print debug
@@ -910,6 +910,13 @@ class tpointer<value_type, ft::vector<value_type> >{
 		tpointer &	operator=(tpointer const & asn){
 			if (asn)
 				this->_p = &(asn->front());
+
+			return (*this);
+		}
+
+		tpointer &	operator=(value_type *asn){
+			if (asn)
+				this->_p = asn;
 
 			return (*this);
 		}

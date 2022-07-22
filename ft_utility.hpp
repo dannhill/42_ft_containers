@@ -22,6 +22,10 @@ struct pair{
 			return;
 		}
 
+		// operator pair<const first_type, second_type>(){
+		// 	return (pair<const first_type, second_type>(const first_type, second_type) );
+		// }
+
 		//temporarily removed const qualifier. Must change pair allocation to dynamic in RBT nodes and tree
 		pair & operator=(const pair& pr){
 			const_cast<typename ft::remove_const<first_type>::type &>(this->first) = pr.first;

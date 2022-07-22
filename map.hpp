@@ -1,6 +1,6 @@
 
 #pragma once
-#include "ft_containers.hpp"
+#include "containers.hpp"
 #include <cstdio> // library used only to define "size_t"
 #include <iostream> // library used only to debug printing
 #include <stdexcept>
@@ -155,7 +155,7 @@ class map{
 		mapped_type& operator[] (const key_type& k){
 			return (this->findCompare(this->tree->getRoot(), // start from the root
 				value_type(k, mapped_type() ), // build element to insert or compare
-				true)->getVal().second); // set insert mode to true and get value of mapped_type
+				true)->getVal()->second); // set insert mode to true and get value of mapped_type
 		}
 		#pragma endregion
 
