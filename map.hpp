@@ -5,7 +5,6 @@
 #include <iostream> // library used only to debug printing
 #include <stdexcept>
 #include <string>
-#include "ft_iterator.hpp"
 #include "rbt.hpp"
 #include "ft_type_traits.hpp"
 #include "ft_utility.hpp"
@@ -355,6 +354,7 @@ class map{
 		size_type			_size;
 		static const size_type	_max_size;
 
+		// don't know if this should be declared const, tests need to be made
 		nodeType	*findCompare(nodeType *root, value_type value, short insert = 0){
 			value_compare	comp( (key_compare()) );
 

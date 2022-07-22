@@ -237,10 +237,10 @@ iterator<T>	operator-(typename iterator<T>::difference_type n,
 	return tmp;
 }
 
-template <class Iterator>
-bool operator==(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
-	return lhs == rhs;
-}
+// template <class Iterator>
+// bool operator==(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
+// 	return lhs == rhs;
+// }
 
 template <class Iterator>
 bool operator!=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
@@ -270,7 +270,7 @@ bool operator>=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
 
 #pragma region Const Iterator
 template<typename T, class dstruct>
-class const_iterator : public iterator<T, dstruct>{
+class const_iterator : public ft::iterator<T, dstruct>{
 	public:
 		using typename iterator<T, dstruct>::iterator_category;
 		using typename iterator<T, dstruct>::value_type;
@@ -894,11 +894,11 @@ class iterator_traits<const T*>{
 
 #pragma region Template Pointer
 template<typename value_type>
-class tpointer<value_type, vector<value_type> >{
+class tpointer<value_type, ft::vector<value_type> >{
 	public:
 		typedef value_type * pointer;
 		
-		tpointer(vector<value_type> *container){
+		tpointer(ft::vector<value_type> *container){
 			if (container)
 				this->_p = &(container->front());
 			else
