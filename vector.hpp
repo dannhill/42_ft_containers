@@ -226,7 +226,7 @@ class vector
 			}
 			else if (n > this->size() && n <= this->capacity())
 			{
-				for (size_t i(this->size()); i < this->capacity(); i++)
+				for (size_t i(this->size()); i < n; i++)
 					defal.construct(&_arr[i], val);
 				this->_size = n;
 			}

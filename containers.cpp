@@ -2,7 +2,7 @@
 // #include <vector>
 // #include <iostream>
 
-using namespace std;
+// using namespace std;
 
 // int	main(void){
 // 	ft::vector<int>	vec(10);

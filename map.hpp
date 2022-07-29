@@ -68,6 +68,7 @@ class map{
 
 		map (const map& x) : _size(x._size){
 			const_iterator	ite(x.begin());
+			this->tree = new RBtree<value_type, allocator_type>;
 
 			for(; ite != x.end(); ite++)
 			{ //curly brackets for clearer code
