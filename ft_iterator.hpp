@@ -4,8 +4,8 @@
 #include <cstddef>// library used only to include ptrdiff_t
 #include <iostream>// library used only to print debug
 #include "ft_type_traits.hpp"
-// #include "vector.hpp"
-// #include "rbt.hpp"
+#include "vector.hpp"
+#include "rbt.hpp"
 #include <cmath>
 
 namespace ft

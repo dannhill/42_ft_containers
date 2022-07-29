@@ -227,7 +227,7 @@ class vector
 			else if (n > this->size() && n <= this->capacity())
 			{
 				for (size_t i(this->size()); i < n; i++)
-					defal.construct(&_arr[i], val);
+					_arr[i] = val;
 				this->_size = n;
 			}
 			else if (n > this->capacity() && n <= this->max_size())
@@ -249,8 +249,8 @@ class vector
 					}
 					else if (i >= this->size() && i < n)
 						defal.construct(&swap[i], val);
-					// else if (i >= n)
-					// 	defal.destroy(&swap[i]);
+					else if (i >= n)
+						defal.construct(&swap[i], value_type() );
 				}
 				if (this->size() > 0)
 					defal.deallocate(_arr, this->capacity());
@@ -346,10 +346,10 @@ class vector
 		typename ft::disable_if<ft::is_integral<InputIterator>::value
 		>::type assign(InputIterator first, InputIterator last){
 			size_t	sz(0);
-			for (; last != first; sz++, last--);
+			for (InputIterator ite(first); ite != last; sz++, ite++);
 
 			this->resize(sz);
-			for (size_t i(0); i < sz; i++, first++)
+			for (size_t i(0); first != last; first++, i++)
 			{
 				defal.destroy(&_arr[i]);
 				defal.construct(&_arr[i], *first);
@@ -359,13 +359,13 @@ class vector
 		}
 
 		void	assign(size_t n, const value_type& val){
-			size_t	old_size(this->size());
+			size_t	old_size(this->size() );
 
+			(void)old_size;
 			this->resize(n, val);
 			for (size_t i(0); i < old_size; i++)
 			{
-				defal.destroy(&_arr[i]);
-				defal.construct(&_arr[i], val);
+				this->_arr[i] = val;
 			}
 
 			return;
