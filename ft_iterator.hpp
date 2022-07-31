@@ -32,6 +32,14 @@ namespace ft
 
 // template<typename value_type, class dstruct = vector<value_type> >
 // class tpointer;
+
+	template<typename T>
+	iterator<T>	operator+(typename iterator<T>::difference_type n,
+		const iterator<T>& it);
+	
+	template<typename T>
+	iterator<T>	operator-(typename iterator<T>::difference_type n,
+		const iterator<T>& it);
 #pragma endregion
 
 #pragma region Random Access Iterator
@@ -47,6 +55,10 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 		iterator(void) : std::iterator<std::random_access_iterator_tag, value_type>(), p(static_cast<dstruct *>(NULL) ){
 			// this->p = static_cast<dstruct *>(NULL);
 
+			return;
+		}
+
+		iterator(tpointer<value_type, dstruct> point) : p(point){
 			return;
 		}
 
@@ -193,28 +205,36 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return *(this->p + n);
 		}
 
-		operator const_iterator<value_type>(void){
-			const_iterator<value_type> ret;
+		operator const_iterator<value_type, dstruct>(void){
+			const_iterator<value_type, dstruct> ret(this->p);
 
-			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			// ret += reinterpret_cast<difference_type>(static_cast<value_type *>(this->p)) / sizeof(value_type *);
 			return ret;
 		}
 
-		operator reverse_iterator<value_type>(void){
-			reverse_iterator<value_type> ret;
+		operator reverse_iterator<value_type, dstruct>(void){
+			reverse_iterator<value_type, dstruct> ret;
 
-			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			ret -= reinterpret_cast<difference_type>(static_cast<value_type *>(this->p)) / sizeof(value_type);
 			return ret;
 		}
 
-		operator const_reverse_iterator<value_type>(void){
-			const_reverse_iterator<value_type> ret;
+		operator const_reverse_iterator<value_type, dstruct>(void){
+			const_reverse_iterator<value_type, dstruct> ret;
 
-			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
+			ret -= reinterpret_cast<difference_type>(static_cast<value_type *>(this->p)) / sizeof(value_type);
 			return ret;
 		}
 	protected:
 		tpointer<value_type, dstruct>	p;
+
+		template<typename U>
+		friend iterator<U>	operator+(typename iterator<U>::difference_type n,
+			const iterator<U>& it);
+
+		template<typename U>
+		friend iterator<U>	operator-(typename iterator<U>::difference_type n,
+			const iterator<U>& it);
 };
 
 template<typename T>
@@ -222,9 +242,9 @@ iterator<T>	operator+(typename iterator<T>::difference_type n,
 	const iterator<T>& it){
 	iterator<typename iterator<T>::value_type>	tmp(it);
 
-	tmp.p += n;
+	// tmp.p += n;
 
-	return tmp;
+	return tmp + n;
 }
 
 template<typename T>
@@ -232,9 +252,9 @@ iterator<T>	operator-(typename iterator<T>::difference_type n,
 	const iterator<T>& it){
 	iterator<typename iterator<T>::value_type>	tmp(it);
 	
-	tmp.p -= n;
+	// tmp.p -= n;
 
-	return tmp;
+	return tmp - n;
 }
 
 // template <class Iterator>
@@ -279,13 +299,17 @@ class const_iterator : public ft::iterator<T, dstruct>{
 		using typename iterator<T, dstruct>::reference;
 
 		const_iterator(void) : iterator<T, dstruct>(){
-			this->p = static_cast<dstruct *>(NULL);
+			this->p = static_cast<value_type *>(NULL);
 
 			return;
 		}
 
 		const_iterator(dstruct * container) : iterator<T, dstruct>(container){// useful only for red-black tree node pointer. need to modify for vector
 
+			return;
+		}
+
+		const_iterator(tpointer<value_type, dstruct> point) : iterator<T, dstruct>(point){
 			return;
 		}
 
@@ -432,9 +456,9 @@ const_iterator<T>	operator+(typename const_iterator<T>::difference_type n,
 	const const_iterator<T>& con_it){
 	const_iterator<typename const_iterator<T>::value_type>	tmp(con_it);
 
-	tmp.p += n;
+	// tmp.p += n;
 
-	return tmp;
+	return tmp + n;
 }
 
 template<typename T>
@@ -442,9 +466,9 @@ const_iterator<T>	operator-(typename const_iterator<T>::difference_type n,
 	const const_iterator<T>& con_it){
 	const_iterator<typename const_iterator<T>::value_type>	tmp(con_it);
 	
-	tmp.p -= n;
+	// tmp.p -= n;
 
-	return tmp;
+	return tmp - n;
 }
 
 template <class Iterator>
@@ -489,6 +513,10 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		using typename ft::iterator<T, dstruct>::reference;
 
 		reverse_iterator(void) : iterator<T, dstruct>(){
+			return;
+		}
+
+		reverse_iterator(tpointer<value_type, dstruct> point) : iterator<T, dstruct>(point){
 			return;
 		}
 
@@ -598,23 +626,20 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		}
 
 		operator const_reverse_iterator<value_type>(void){
-			const_reverse_iterator<value_type> ret;
+			const_reverse_iterator<value_type> ret(this->p);
 
-			ret -= reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
 			return ret;
 		}
 
 		operator const_iterator<value_type>(void){
-			const_iterator<value_type> ret;
+			const_iterator<value_type> ret(this->p);
 
-			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
 			return ret;
 		}
 
 		operator iterator<value_type>(void){
-			iterator<value_type> ret;
+			iterator<value_type> ret(this->p);
 
-			ret += reinterpret_cast<difference_type>(this->p) / sizeof(value_type);
 			return ret;
 		}
 };
@@ -682,6 +707,10 @@ class const_reverse_iterator : public const_iterator<const T, dstruct>{
 		using typename ft::const_iterator<const T, dstruct>::reference;
 
 		const_reverse_iterator(void) : const_iterator<const T, dstruct>(){
+			return;
+		}
+
+		const_reverse_iterator(tpointer<value_type, dstruct> point) : const_iterator<const T, dstruct>(point){
 			return;
 		}
 
@@ -907,9 +936,12 @@ class tpointer<value_type, ft::vector<value_type> >{
 			return;
 		}
 
+		tpointer(value_type *val) : _p(val){
+			return;
+		}
+
 		tpointer &	operator=(tpointer const & asn){
-			if (asn)
-				this->_p = &(asn->front());
+			this->_p = asn._p;
 
 			return (*this);
 		}

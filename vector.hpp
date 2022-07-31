@@ -103,8 +103,7 @@ class vector
 		virtual	~vector(void){
 			for (size_t i(0); i < this->size(); i++)
 				defal.destroy(&_arr[i]);
-			if (this->size() > 0)
-				defal.deallocate(_arr, this->capacity());
+			defal.deallocate(_arr, this->capacity());
 
 			return;
 		}
@@ -141,65 +140,49 @@ class vector
 		typedef ft::const_reverse_iterator<value_type, vector<value_type> >	const_reverse_iterator;
 		
 		iterator	begin(void){
-			iterator	ret;
-
-			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr) / sizeof(value_type);
+			iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr));
 
 			return ret;
 		}
 
 		const_iterator	begin(void) const{
-			const_iterator	ret;
-
-			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr) / sizeof(value_type);
+			const_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr));
 
 			return ret;
 		}
 
 		iterator	end(void){
-			iterator ret;
-
-			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size) / sizeof(value_type);
+			iterator ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size() ) );
 
 			return ret;
 		}
 
 		const_iterator	end(void) const{
-			const_iterator ret;
-
-			ret += reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size) / sizeof(value_type);
+			const_iterator ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size() ) );
 
 			return ret;
 		}
 
 		reverse_iterator	rbegin(void){
-			reverse_iterator	ret;
-
-			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
+			reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size() - 1));
 
 			return ret;
 		}
 
 		const_reverse_iterator	rbegin(void) const{
-			const_reverse_iterator	ret;
-
-			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr + this->_size - 1) / sizeof(value_type);
+			const_reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size() - 1));
 
 			return ret;
 		}
 
 		reverse_iterator	rend(void){
-			reverse_iterator	ret;
-
-			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr - 1) / sizeof(value_type);
+			reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr - 1));
 
 			return ret;
 		}
 
 		const_reverse_iterator	rend(void) const{
-			const_reverse_iterator	ret;
-
-			ret -= reinterpret_cast<typename iterator::difference_type>(this->_arr - 1) / sizeof(value_type);
+			const_reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr - 1));
 
 			return ret;
 		}
@@ -253,7 +236,11 @@ class vector
 						defal.construct(&swap[i], value_type() );
 				}
 				if (this->size() > 0)
-					defal.deallocate(_arr, this->capacity());
+				{
+					for (size_t i(0); i < this->size(); i++)
+						defal.destroy(this->_arr + 1);
+					defal.deallocate(this->_arr, this->capacity());
+				}
 				this->_size = n;
 				this->_capacity = new_capacity;
 				this->_arr = swap;
@@ -360,10 +347,10 @@ class vector
 
 		void	assign(size_t n, const value_type& val){
 			size_t	old_size(this->size() );
-
+			
 			(void)old_size;
 			this->resize(n, val);
-			for (size_t i(0); i < old_size; i++)
+			for (size_t i(0); i < n; i++)
 			{
 				this->_arr[i] = val;
 			}
@@ -421,9 +408,10 @@ class vector
 			size_t	sz(this->size());
 			
 			this->resize(sz + range);
-			for (size_t i(offset); i + range< this->size() && sz > 0; i++)
-				(*this)[i + range] = (*this)[i]; //BUG HEAP BUFFER OVERFLOW
-			for (size_t i(offset); i < offset + range && sz > 0; i++, first++)
+			int	sub(this->size() - offset - range);
+			for (int i(sub); i >= 0 && sz > 0; i--)
+				(*this)[this->size() - sub + i] = (*this)[offset + i]; //BUG HEAP BUFFER OVERFLOW
+			for (size_t i(offset); i < offset + range && this->size() > 0; i++, first++)
 				(*this)[i] = *first;
 
 			return;
@@ -436,7 +424,7 @@ class vector
 			for (size_t i(offset); i < sz - 1; i++)
 				(*this)[i] = (*this)[i + 1];
 			this->pop_back();
-
+			
 			return this->begin() + offset;
 		}
 
@@ -444,7 +432,7 @@ class vector
 			size_t	offset(first - this->begin());
 			size_t	range(last - first);
 			size_t	sz(this->size());
-
+			
 			for (size_t i(offset); i < sz - range; i++)
 				(*this)[i] = (*this)[i + range];
 			this->resize(sz - range);
