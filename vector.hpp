@@ -103,8 +103,7 @@ class vector
 		virtual	~vector(void){
 			for (size_t i(0); i < this->size(); i++)
 				defal.destroy(&_arr[i]);
-			defal.deallocate(_arr, this->capacity());
-
+			// defal.deallocate(_arr, this->capacity());
 			return;
 		}
 		#pragma endregion
