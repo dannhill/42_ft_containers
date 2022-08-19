@@ -151,13 +151,13 @@ class vector
 		}
 
 		iterator	end(void){
-			iterator ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size() ) );
+			iterator ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size(), 1 ) );
 
 			return ret;
 		}
 
 		const_iterator	end(void) const{
-			const_iterator ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size() ) );
+			const_iterator ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr + this->size(), 1 ) );
 
 			return ret;
 		}
@@ -175,13 +175,13 @@ class vector
 		}
 
 		reverse_iterator	rend(void){
-			reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr - 1));
+			reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr - 1, 2));
 
 			return ret;
 		}
 
 		const_reverse_iterator	rend(void) const{
-			const_reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr - 1));
+			const_reverse_iterator	ret(tpointer<value_type, vector<value_type, allocator_type> >(this->_arr - 1, 2));
 
 			return ret;
 		}

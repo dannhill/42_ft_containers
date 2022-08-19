@@ -661,7 +661,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		}
 
 		reverse_iterator &	operator++(void){
-			this->p = this->p + static_cast<size_t>(1);
+			this->p = this->p - static_cast<size_t>(1);
 
 			return (*this);
 		}
@@ -760,14 +760,14 @@ class	reverse_iterator : public iterator<T, dstruct>{
 
 		operator const_iterator<value_type, dstruct>(void){
 			const_iterator<value_type, dstruct> ret(this->p);
-			ret -= 1;
+			// ret -= 1;
 
 			return ret;
 		}
 
 		operator iterator<value_type, dstruct>(void){
 			iterator<value_type, dstruct> ret(this->p);
-			ret -= 1;
+			// ret -= 1;
 
 			return ret;
 		}
@@ -780,9 +780,14 @@ class	reverse_iterator : public iterator<T, dstruct>{
 
 		// template<typename U, class ustruct>
 		friend class const_reverse_iterator<T, dstruct>;
-		// template<typename U>
-		// friend reverse_iterator<U>	operator+(typename reverse_iterator<U>::difference_type n,
-		// 	const reverse_iterator<U>& rev_it);
+
+		template<typename U>
+		friend reverse_iterator<U>	operator+(typename reverse_iterator<U>::difference_type n,
+			const reverse_iterator<U>& rev_it);
+
+		template<typename U>
+		friend reverse_iterator<U>	operator-(typename reverse_iterator<U>::difference_type n,
+			const reverse_iterator<U>& rev_it);
 };
 
 // template<typename T>
@@ -800,7 +805,17 @@ reverse_iterator<T>	operator-(typename reverse_iterator<T>::difference_type n,
 	const reverse_iterator<T>& rev_it){
 	reverse_iterator<typename reverse_iterator<T>::value_type>	tmp(rev_it);
 	
-	tmp.p += n;
+	tmp.p = tmp.p + n;
+
+	return tmp;
+}
+
+template<typename T>
+reverse_iterator<T>	operator+(typename reverse_iterator<T>::difference_type n,
+	const reverse_iterator<T>& rev_it){
+	reverse_iterator<typename reverse_iterator<T>::value_type>	tmp(rev_it);
+	
+	tmp.p = tmp.p - n;
 
 	return tmp;
 }
