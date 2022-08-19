@@ -334,15 +334,15 @@ bool operator>=(const iterator<Iterator>& lhs, const iterator<Iterator>& rhs){
 
 #pragma region Const Iterator
 template<typename T, class dstruct>
-class const_iterator : public std::iterator<std::random_access_iterator_tag, const T>{
+class const_iterator : public std::iterator<std::random_access_iterator_tag, T>{
 	public:
-		using typename std::iterator<std::random_access_iterator_tag, const T>::iterator_category;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::value_type;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::difference_type;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::pointer;
-		using typename std::iterator<std::random_access_iterator_tag, const T>::reference;
+		using typename std::iterator<std::random_access_iterator_tag, T>::iterator_category;
+		using typename std::iterator<std::random_access_iterator_tag, T>::value_type;
+		using typename std::iterator<std::random_access_iterator_tag, T>::difference_type;
+		using typename std::iterator<std::random_access_iterator_tag, T>::pointer;
+		using typename std::iterator<std::random_access_iterator_tag, T>::reference;
 
-		const_iterator(void) : std::iterator<std::random_access_iterator_tag, const value_type>(), p(){
+		const_iterator(void) : std::iterator<std::random_access_iterator_tag, value_type>(), p(){
 			// this->p = static_cast<dstruct *>(NULL);
 
 			return;
@@ -352,18 +352,18 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return;
 		}
 
-		const_iterator(dstruct * container) : std::iterator<std::random_access_iterator_tag, const value_type>(), p(container){// useful only for red-black tree node pointer. need to modify for vector
+		const_iterator(dstruct * container) : std::iterator<std::random_access_iterator_tag, value_type>(), p(container){// useful only for red-black tree node pointer. need to modify for vector
 			// this->p = container;
 
 			return;
 		}
 
-		const_iterator(typename dstruct::nodeType * point, bool end = false) : std::iterator<std::random_access_iterator_tag, const value_type>(), p(point, end){
+		const_iterator(typename dstruct::nodeType * point, bool end = false) : std::iterator<std::random_access_iterator_tag, value_type>(), p(point, end){
 
 			return;
 		}
 
-		const_iterator(const_iterator const & cpy) : std::iterator<std::random_access_iterator_tag, const value_type>(), p(cpy.p){
+		const_iterator(const_iterator const & cpy) : std::iterator<std::random_access_iterator_tag, value_type>(), p(cpy.p){
 			// this->p = cpy.p;
 
 			return;
@@ -373,14 +373,14 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, con
 			return;
 		}
 
+		virtual tpointer<value_type, dstruct> const &	getPoint(void) const{
+			return this->p;
+		}
+
 		const_iterator &	operator=(const_iterator const & asn){
 			this->p = asn.p;
 
 			return (*this);
-		}
-
-		tpointer<value_type, dstruct> const &	getPoint(void) const{
-			return (this->p);
 		}
 
 		virtual bool	operator==(const_iterator const & cmp) const{
@@ -624,20 +624,32 @@ class	reverse_iterator : public iterator<T, dstruct>{
 			return;
 		}
 
-		reverse_iterator(reverse_iterator<T> const & cpy) : iterator<T, dstruct>(cpy){
+		// reverse_iterator(reverse_iterator<T, dstruct> const & cpy) : iterator<T, dstruct>(cpy){
+		// 	return;
+		// }
+
+		reverse_iterator(iterator<T, dstruct> const & cpy) : iterator<T, dstruct>(cpy - 1){
 			return;
 		}
 
 		iterator<value_type>	base(void) const{
-			return static_cast<iterator<value_type> >(*this);
+			return static_cast<iterator<value_type, dstruct> >(*this) + 1;
 		}
 
 		virtual bool	operator==(reverse_iterator const & cmp) const{
-			return this->p == cmp.p;
+			return (static_cast<value_type *>(this->p) == static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator==(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) == const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
 		virtual bool	operator!=(reverse_iterator const & cmp) const{
-			return this->p != cmp.p;
+			return (static_cast<value_type *>(this->p) != static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator!=(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) != const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
 		reverse_iterator	operator+(difference_type n) const{
@@ -701,19 +713,35 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		}
 
 		virtual bool	operator<(reverse_iterator const & cmp) const{
-			return this->p < cmp.p;
+			return (static_cast<value_type *>(this->p) < static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator<(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) < const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
 		virtual bool	operator>(reverse_iterator const & cmp) const{
-			return this->p > cmp.p;
+			return (static_cast<value_type *>(this->p) > static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator>(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) > const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
 		virtual bool	operator<=(reverse_iterator const & cmp) const{
-			return this->p <= cmp.p;
+			return (static_cast<value_type *>(this->p) <= static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator<=(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) <= const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
 		virtual bool	operator>=(reverse_iterator const & cmp) const{
-			return this->p >= cmp.p;
+			return (static_cast<value_type *>(this->p) >= static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator>=(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) >= const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
 		virtual value_type &	operator[](difference_type n){
@@ -732,26 +760,40 @@ class	reverse_iterator : public iterator<T, dstruct>{
 
 		operator const_iterator<value_type, dstruct>(void){
 			const_iterator<value_type, dstruct> ret(this->p);
+			ret -= 1;
 
 			return ret;
 		}
 
 		operator iterator<value_type, dstruct>(void){
 			iterator<value_type, dstruct> ret(this->p);
+			ret -= 1;
 
 			return ret;
 		}
+
+		protected:
+
+
+		// template<typename U, class ustruct>
+		friend class const_iterator<T, dstruct>;
+
+		// template<typename U, class ustruct>
+		friend class const_reverse_iterator<T, dstruct>;
+		// template<typename U>
+		// friend reverse_iterator<U>	operator+(typename reverse_iterator<U>::difference_type n,
+		// 	const reverse_iterator<U>& rev_it);
 };
 
-template<typename T>
-reverse_iterator<T>	operator+(typename reverse_iterator<T>::difference_type n,
-	const reverse_iterator<T>& rev_it){
-	reverse_iterator<typename reverse_iterator<T>::value_type>	tmp(rev_it);
+// template<typename T>
+// reverse_iterator<T>	operator+(typename reverse_iterator<T>::difference_type n,
+// 	const reverse_iterator<T>& rev_it){
+// 	reverse_iterator<typename reverse_iterator<T>::value_type>	tmp(rev_it);
 
-	tmp.p -= n;
+// 	tmp.p -= n;
 
-	return tmp;
-}
+// 	return tmp;
+// }
 
 template<typename T>
 reverse_iterator<T>	operator-(typename reverse_iterator<T>::difference_type n,
@@ -831,16 +873,26 @@ class const_reverse_iterator : public const_iterator<T, dstruct>{
 		// 	return;
 		// }
 
+
+
 		iterator<value_type>	base(void) const{
 			return static_cast<const_iterator<value_type> >(*this);
 		}
 
 		virtual bool	operator==(const_reverse_iterator const & cmp) const{
-			return this->p == cmp.p;
+			return (static_cast<value_type *>(this->p) == static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator==(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) == const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
 		virtual bool	operator!=(const_reverse_iterator const & cmp) const{
-			return this->p != cmp.p;
+			return (static_cast<value_type *>(this->p) != static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator!=(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) != const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
 		const_reverse_iterator	operator+(difference_type n) const{
@@ -892,19 +944,35 @@ class const_reverse_iterator : public const_iterator<T, dstruct>{
 		}
 
 		virtual bool	operator<(const_reverse_iterator const & cmp) const{
-			return this->p < cmp.p;
+			return (static_cast<value_type *>(this->p) < static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator<(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) < const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
 		virtual bool	operator>(const_reverse_iterator const & cmp) const{
-			return this->p > cmp.p;
+			return (static_cast<value_type *>(this->p) > static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator>(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) > const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
 		virtual bool	operator<=(const_reverse_iterator const & cmp) const{
-			return this->p <= cmp.p;
+			return (static_cast<value_type *>(this->p) <= static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator<=(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) <= const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
 		virtual bool	operator>=(const_reverse_iterator const & cmp) const{
-			return this->p >= cmp.p;
+			return (static_cast<value_type *>(this->p) >= static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator>=(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) >= const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
 		virtual value_type &	operator[](difference_type n){
