@@ -332,14 +332,16 @@ class map{
 
 		pair<const_iterator,const_iterator> equal_range (const key_type& k) const{
 			const_iterator	res = lower_bound(k);
+			const_iterator	res2 = upper_bound(k);
 
-			return ft::make_pair(res, res + 1);
+			return ft::make_pair(res, res2);
 		}
 
 		pair<iterator,iterator>             equal_range (const key_type& k){
 			iterator res = lower_bound(k);
+			iterator res2 = upper_bound(k);
 
-			return ft::make_pair(res, res + 1);
+			return ft::make_pair(res, res2);
 		}
 		#pragma endregion
 
@@ -378,10 +380,45 @@ class map{
 			}
 			else if (insert >= 2)
 			{
-				if (comp(*(root->getVal() ), value))
-					return (tree->findNext(root));
+				if (comp(value, *(root->getVal())))
+					return root;
+					
+				return (tree->findNext(root));
 				//else
+				// return root;
+			}
+			else
+				return NULL;
+		}
+
+		nodeType	*findCompare(nodeType *root, value_type value, short insert = 0) const{
+			value_compare	comp( (key_compare()) );
+
+			if (root && !(comp(*(root->getVal() ), value) || comp(value, *(root->getVal() ) ) )
+				&& insert != 3)
 				return root;
+			else if (root && comp(*(root->getVal() ), value) && root->getChild(RIGHT) )
+				return findCompare(root->getChild(RIGHT), value, insert);
+			else if (root && comp(value, *(root->getVal() ) ) && root->getChild(LEFT) )
+				return findCompare(root->getChild(LEFT), value, insert);
+			else if (insert == 1)
+			{
+				nodeType	*node = nullptr;//new nodeType(value);
+
+				// tree->RBinsert(node, root, root ? comp(*(root->getVal() ), value) : RIGHT ); //insert new node on the right direction
+				
+				// this->_size++; //increase the size of the map by 1
+				
+				return node;
+			}
+			else if (insert >= 2)
+			{
+				if (comp(value, *(root->getVal())))
+					return root;
+					
+				return (tree->findNext(root));
+				//else
+				// return root;
 			}
 			else
 				return NULL;
