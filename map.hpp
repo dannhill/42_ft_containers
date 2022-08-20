@@ -58,7 +58,7 @@ class map{
 
 			for(; first != last; first++, this->_size++)
 			{
-				this->tree->RBinsert(new nodeType(*first, RED), //create new node with same element of first
+				this->tree->RBinsert(new nodeType(*first), //create new node with same element of first
 				this->tree->findMax(this->tree->getRoot() ), //find the current max element in the new tree
 				RIGHT ); //set the new node as the right child
 			}
@@ -89,7 +89,7 @@ class map{
 
 		#pragma region operator=
 		map& operator= (const map& x){
-			this->_size = x.size;
+			this->_size = x.size();
 
 			const_iterator	ite(x.begin());
 
@@ -273,7 +273,7 @@ class map{
 		}
 
 		value_compare value_comp() const{
-			return value_compare();
+			return value_compare(key_compare() );
 		}
 		#pragma endregion
 
