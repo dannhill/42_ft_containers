@@ -121,6 +121,7 @@ class RBtree{
 		//desturctor
 		~RBtree(void){
 			this->clear();
+			this->root = NULL;
 			return;
 		}
 

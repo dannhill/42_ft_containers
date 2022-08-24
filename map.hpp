@@ -56,12 +56,14 @@ class map{
 
 			tree = new RBtree<value_type, allocator_type>;
 
-			for(; first != last; first++, this->_size++)
-			{
-				this->tree->RBinsert(new nodeType(*first), //create new node with same element of first
-				this->tree->findMax(this->tree->getRoot() ), //find the current max element in the new tree
-				RIGHT ); //set the new node as the right child
-			}
+			this->insert(first, last);
+
+			// for(; first != last; first++, this->_size++)
+			// {
+				// this->tree->RBinsert(new nodeType(*first), //create new node with same element of first
+				// this->tree->findMax(this->tree->getRoot() ), //find the current max element in the new tree
+				// RIGHT ); //set the new node as the right child
+			// }
 		
 			return;
 		}
@@ -89,16 +91,22 @@ class map{
 
 		#pragma region operator=
 		map& operator= (const map& x){
-			this->_size = x.size();
+			// this->_size = x.size();
 
-			const_iterator	ite(x.begin());
+			// const_iterator	ite(x.begin());
 
-			for(; ite != x.end(); ite++)
-			{ //curly brackets for clearer code
-				this->tree->RBinsert(new nodeType(*ite), //create new node with same element of first
-					this->tree->findMax(this->tree->getRoot()), //find the current max element in the new tree
-					RIGHT); //set the new node as the right child
-			}
+			// for(; ite != x.end(); ite++)
+			// { //curly brackets for clearer code
+			// 	this->tree->RBinsert(new nodeType(*ite), //create new node with same element of first
+			// 		this->tree->findMax(this->tree->getRoot()), //find the current max element in the new tree
+			// 		RIGHT); //set the new node as the right child
+			// }
+
+			this->clear();
+
+			this->tree->clear();
+
+			this->insert(x.begin(), x.end());
 
 			return (*this);
 		}
@@ -140,7 +148,7 @@ class map{
 
 		#pragma region Capacity
 		bool empty() const{
-			return (tree->getRoot() == NULL);
+			return (this->size() == 0);
 		}
 
 		size_type size() const{
@@ -171,6 +179,9 @@ class map{
 				return ft::make_pair(iterator(node), false);
 			else
 			{
+				if (this->size() <= 0)
+					this->tree->clear();
+				
 				iterator	ite(this->findCompare(this->tree->getRoot(), val, true) );
 				return ft::make_pair(ite, true);
 			}
@@ -185,6 +196,9 @@ class map{
 				&& ( (position + 1).getPoint().getEnd() == 1 || comp(val, *(position + 1) ) ) ) //if next is after last (AKA: this->end() )
 			{
 				nodeType	*node = new nodeType(val);
+
+				if (this->size() <= 0)
+					this->tree->clear();
 
 				this->tree->RBinsert(node, //attach newly created node
 				position.getPoint().getNode(), //this position is father
@@ -202,6 +216,9 @@ class map{
 		void insert (InputIterator first, InputIterator last){
 			iterator	hint(this->end() );
 
+			if (this->size() <= 0 && first != last)
+					this->tree->clear();
+
 			for(; first != last; first++)
 				hint = this->insert(hint, *first);
 
@@ -212,10 +229,10 @@ class map{
 			nodeType	*toDel;
 			if (position.getPoint().getNode() == NULL)
 				return;
-			else if ( (toDel = this->findCompare(this->tree->getRoot(), *position, false) ) == NULL)
-				return;
+			// else if ( (toDel = this->findCompare(this->tree->getRoot(), *position, false) ) == NULL)
+			// 	return;
 			else
-				this->tree->RBdelete(toDel);
+				this->tree->RBdelete(position.getPoint().getNode() );
 		
 			this->_size--;
 
@@ -261,6 +278,10 @@ class map{
 
 		void clear(){
 			this->tree->clear();
+
+			this->tree->RBinsert(new nodeType(value_type(0, 0)), this->tree->getRoot(), RIGHT);
+
+			//not sure if this works
 
 			this->_size = 0;
 			return;
@@ -371,6 +392,9 @@ class map{
 			else if (insert == 1)
 			{
 				nodeType	*node = new nodeType(value);
+
+				if (this->size() <= 0)
+					this->tree->clear();
 
 				tree->RBinsert(node, root, root ? comp(*(root->getVal() ), value) : RIGHT ); //insert new node on the right direction
 				
