@@ -138,11 +138,11 @@ class map{
 		}
 
 		reverse_iterator rend(){
-			return (reverse_iterator(tree->findMin(tree->getRoot() ), 3) );
+			return (reverse_iterator(tree->findMin(tree->getRoot() ), 2) );
 		}
 
 		const_reverse_iterator rend() const{
-			return (const_reverse_iterator(tree->findMin(tree->getRoot() ), 3) );
+			return (const_reverse_iterator(tree->findMin(tree->getRoot() ), 2) );
 		}
 		#pragma endregion
 
@@ -229,11 +229,11 @@ class map{
 			nodeType	*toDel;
 			if (position.getPoint().getNode() == NULL)
 				return;
-			// else if ( (toDel = this->findCompare(this->tree->getRoot(), *position, false) ) == NULL)
-			// 	return;
+			else if ( (toDel = this->findCompare(this->tree->getRoot(), *position, false) ) == NULL)
+				return;
 			else
-				this->tree->RBdelete(position.getPoint().getNode() );
-		
+				this->tree->RBdelete(toDel);
+
 			this->_size--;
 
 			return;
@@ -250,12 +250,21 @@ class map{
 		}
 
 		void erase (iterator first, iterator last){
-			for(nodeType *index; first.getPoint().getNode() && first != last; this->_size--)
+			for(nodeType *index; //static_cast<value_type *>(first.getPoint()) && 
+				//first.getPoint().getNode() && 
+				first != last;
+				this->_size--)
 			{
 				index = first.getPoint().getNode();
 				first++;
 				this->tree->RBdelete(index);
 			}
+
+			// if (last.getPoint().getEnd() == 1)
+			// {
+			// 	std::cout << "hello\n";
+			// 	this->erase(--last);
+			// }
 
 			return;
 		}
@@ -447,6 +456,25 @@ class map{
 			else
 				return NULL;
 		}
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator==(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator!=(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator>(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator<(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator>=(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator<=(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
+
 };
 
 template <class Key, class T, class Compare, class Alloc>
@@ -465,9 +493,78 @@ class map<Key,T,Compare,Alloc>::value_compare
 		{
 			return comp(x.first, y.first);
 		}
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator==(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
+
+		template <class K, class U, class Cmp, class Al>
+		friend bool operator<(const map<K,U,Cmp,Al>& lhs, const map<K,U,Cmp,Al>& rhs);
 };
 
 template < class Key, class T, class Compare, class Alloc>
 const typename map<Key, T, Compare, Alloc>::size_type	map<Key, T, Compare, Alloc>::_max_size(230584300921369395);
+
+#pragma region non-member functions
+template <class Key, class T, class Compare, class Alloc>
+bool operator==(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs){
+	typename ft::map<Key,T,Compare,Alloc>::value_compare cmp( (Compare() ) );
+
+	size_t sz(lhs.size());
+	if (sz != rhs.size())
+		return false;
+	
+	typename ft::map<Key,T,Compare,Alloc>::const_iterator lbegin = lhs.begin();
+	typename ft::map<Key,T,Compare,Alloc>::const_iterator rbegin = rhs.begin();
+	for (size_t i(0); i < sz; i++)
+	{
+		if (cmp(*lbegin, *rbegin) || cmp(*rbegin, *lbegin) )
+			return false;
+		lbegin++;
+		rbegin++;
+	}
+
+	return true;
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator!=(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs){
+	return !(lhs == rhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs){
+	size_t	sz = lhs.size() < rhs.size() ? lhs.size() : rhs.size();
+	typename ft::map<Key,T,Compare,Alloc>::value_compare cmp( (Compare() ) );
+
+	typename ft::map<Key,T,Compare,Alloc>::const_iterator lbegin = lhs.begin();
+	typename ft::map<Key,T,Compare,Alloc>::const_iterator rbegin = rhs.begin();
+	for (size_t i(0); i < sz; i++)
+	{
+		if (cmp(*lbegin, *rbegin) )
+			return true;
+		else if (cmp(*rbegin, *lbegin) )
+			return false;
+		lbegin++;
+		rbegin++;
+	}
+
+	return lhs.size() < rhs.size() ? true : false;
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<=(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs){
+	return !(rhs < lhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs){
+	return (rhs < lhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>= (const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs){
+	return !(lhs < rhs);
+}
+#pragma endregion
 
 }

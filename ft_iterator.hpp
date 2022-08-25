@@ -68,7 +68,7 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return;
 		}
 
-		iterator(typename dstruct::nodeType * point, bool end = false) : std::iterator<std::random_access_iterator_tag, value_type>(), p(point, end){
+		iterator(typename dstruct::nodeType * point, short end = 0) : std::iterator<std::random_access_iterator_tag, value_type>(), p(point, end){
 
 			return;
 		}
@@ -358,7 +358,7 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return;
 		}
 
-		const_iterator(typename dstruct::nodeType * point, bool end = false) : std::iterator<std::random_access_iterator_tag, value_type>(), p(point, end){
+		const_iterator(typename dstruct::nodeType * point, short end = 0) : std::iterator<std::random_access_iterator_tag, value_type>(), p(point, end){
 
 			return;
 		}
@@ -1194,7 +1194,7 @@ class tpointer<value_type, class RBtree<value_type> >{
 			return;
 		}
 
-		tpointer(point const & cpy, short end = 0) : _p(cpy._p), _end(end){
+		tpointer(point const & cpy) : _p(cpy._p), _end(cpy._end){
 
 			return;
 		}

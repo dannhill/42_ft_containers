@@ -224,7 +224,7 @@ class RBtree{
 				RBnode<T, Alloc>	*swap;
 
 				swap = findMax(N->child[LEFT]);
-				N->val = swap->getVal();
+				*(N->val) = *(swap->getVal());
 
 				RBdeleteRoot(Tree, swap);
 
@@ -232,7 +232,9 @@ class RBtree{
 			}
 
 			//find side of element to delete
-			short	dir = childDir(N);
+			short	dir;
+			if (N->parent)
+				dir = childDir(N);
 
 			//case: New has exactly one child
 			if ((N->getChild(LEFT) != NIL || N->getChild(RIGHT) != NIL) && (N->getChild(LEFT) == NIL || N->getChild(RIGHT) == NIL))
@@ -266,8 +268,8 @@ class RBtree{
 			}
 			
 			RBnode<T, Alloc>	*S;  // -> sibling of N
-			RBnode<T, Alloc>	*C;  // -> close   nephew
-			RBnode<T, Alloc>	*D;  // -> distant nephew
+			RBnode<T, Alloc>	*C = NULL;  // -> close   nephew
+			RBnode<T, Alloc>	*D = NULL;  // -> distant nephew
 
 			//remove node from memory, and dangling pointer
 			P->child[dir] = NULL;
@@ -279,9 +281,12 @@ class RBtree{
 					dir = childDir(N);   // side of parent P on which node N is located
 
 				S = P->child[!dir]; // sibling of N (has black height >= 1)
-				D = S->child[!dir]; // distant nephew
-				C = S->child[dir]; // close   nephew
-				if (S->color == ::RED)
+				if (S)
+				{
+					D = S->child[!dir]; // distant nephew
+					C = S->child[dir]; // close   nephew
+				}
+				if (S && S->color == ::RED)
 				{
 					// S red && P+C+D black: D3
 					RotateDirRoot(Tree,P,dir); // P may be the root
@@ -291,17 +296,20 @@ class RBtree{
 					S = C; // != NIL
 					
 					// now: P red && S black 
-					D = S->child[1-dir]; // distant nephew
+					if (S)
+						D = S->child[1-dir]; // distant nephew
 					if (D != NIL && D->color == ::RED)
 						return RBtree<T>::dcase6(Tree, P, S, D, dir);      // D red && S black
-					C = S->child[  dir]; // close   nephew
+					if (S)
+						C = S->child[  dir]; // close   nephew
 					if (C != NIL && C->color == ::RED)
 						return RBtree<T>::dcase5(Tree, P, S, C, D, dir);      // C red && S+D black
 					// Otherwise C+D considered black.
 					// fall through to Case_D4
 					
 					// P red && S+C+D black: D4
-					S->color = ::RED;
+					if (S)
+						S->color = ::RED;
 					P->color = ::BLACK;
 					return; // deletion complete
 				}                  // S red ===> P+C+D black
@@ -319,7 +327,8 @@ class RBtree{
 					return; // deletion complete -- P red && C+S+D black
 				}
 				// Case_D1 (P+C+S+D black): D1
-				S->color = ::RED;
+				if (S)
+					S->color = ::RED;
 				N = P; // new current node (maybe the root)
 				// iterate 1 black level
 				//   (= 1 tree level) higher
@@ -414,7 +423,11 @@ class RBtree{
 		static RBnode<T, Alloc>	*findMin(RBnode<T, Alloc>	*subtree)
 		{
 			if (subtree == NULL)
-				throw std::exception();
+			{
+				// std::cout << "despacito\n";
+				// throw std::exception();
+				return NULL;
+			}
 			if (subtree->child[LEFT] == NIL)
 				return subtree;
 			
