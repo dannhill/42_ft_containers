@@ -101,6 +101,10 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return (static_cast<value_type *>(this->p) == const_cast<value_type *>(static_cast<const value_type *>(cmp.p) ) );
 		}
 
+		// virtual bool	operator==(reverse_iterator<value_type, dstruct> const & cmp) const{
+		// 	return (static_cast<value_type *>(this->p) == static_cast<value_type *>((cmp + 1).p) );
+		// }
+
 		virtual bool	operator!=(iterator const & cmp) const{
 			return (static_cast<value_type *>(this->p) != static_cast<value_type *>(cmp.p));
 		}
@@ -619,6 +623,11 @@ class	reverse_iterator : public iterator<T, dstruct>{
 			return;
 		}
 
+		reverse_iterator(typename dstruct::nodeType * point, short end = 0) : iterator<T, dstruct>(point, end){
+
+			return;
+		}
+
 		reverse_iterator(dstruct * container) : iterator<T, dstruct>(container){// useful only for red-black tree node pointer. need to modify for vector
 
 			return;
@@ -628,12 +637,12 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		// 	return;
 		// }
 
-		reverse_iterator(iterator<T, dstruct> const & cpy) : iterator<T, dstruct>(cpy - 1){
+		reverse_iterator(iterator<T, dstruct> const & cpy) : iterator<T, dstruct>(cpy){
 			return;
 		}
 
-		iterator<value_type>	base(void) const{
-			return static_cast<iterator<value_type, dstruct> >(*this) + 1;
+		iterator<value_type, dstruct>	base(void) const{
+			return static_cast<iterator<value_type, dstruct> >(*this);
 		}
 
 		virtual bool	operator==(reverse_iterator const & cmp) const{
@@ -760,14 +769,14 @@ class	reverse_iterator : public iterator<T, dstruct>{
 
 		operator const_iterator<value_type, dstruct>(void){
 			const_iterator<value_type, dstruct> ret(this->p);
-			// ret -= 1;
+			// ret += 1;
 
 			return ret;
 		}
 
 		operator iterator<value_type, dstruct>(void){
 			iterator<value_type, dstruct> ret(this->p);
-			// ret -= 1;
+			// ret += 1;
 
 			return ret;
 		}
@@ -890,8 +899,8 @@ class const_reverse_iterator : public const_iterator<T, dstruct>{
 
 
 
-		iterator<value_type>	base(void) const{
-			return static_cast<const_iterator<value_type> >(*this);
+		iterator<value_type, dstruct>	base(void) const{
+			return static_cast<const_iterator<value_type, dstruct> >(*this) + 1;
 		}
 
 		virtual bool	operator==(const_reverse_iterator const & cmp) const{

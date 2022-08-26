@@ -534,15 +534,20 @@ bool operator!=(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,All
 template <class Key, class T, class Compare, class Alloc>
 bool operator<(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs){
 	size_t	sz = lhs.size() < rhs.size() ? lhs.size() : rhs.size();
-	typename ft::map<Key,T,Compare,Alloc>::value_compare cmp( (Compare() ) );
+	// typename ft::map<Key,T,Compare,Alloc>::value_compare cmp( (Compare() ) );
+	Compare cmp;
 
 	typename ft::map<Key,T,Compare,Alloc>::const_iterator lbegin = lhs.begin();
 	typename ft::map<Key,T,Compare,Alloc>::const_iterator rbegin = rhs.begin();
 	for (size_t i(0); i < sz; i++)
 	{
-		if (cmp(*lbegin, *rbegin) )
+		if (cmp((*lbegin).first, (*rbegin).first) )
 			return true;
-		else if (cmp(*rbegin, *lbegin) )
+		else if (cmp((*rbegin).first, (*lbegin).first) )
+			return false;
+		else if (cmp((*lbegin).second, (*rbegin).second) )
+			return true;
+		else if (cmp((*rbegin).second, (*lbegin).second) )
 			return false;
 		lbegin++;
 		rbegin++;
