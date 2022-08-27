@@ -114,10 +114,14 @@ class map{
 
 		#pragma region Iterators
 		iterator begin(){
+			if (this->size() == 0)
+				return this->end();
 			return (iterator(tree->findMin(tree->getRoot() ) ) );
 		}
 
 		const_iterator begin() const{
+			if (this->size() == 0)
+				return this->end();
 			return (const_iterator(tree->findMin(tree->getRoot() ) ) );
 		}
 
@@ -130,10 +134,14 @@ class map{
 		}
 
 		reverse_iterator rbegin(){
+			if (this->size() == 0)
+				return this->rend();
 			return (reverse_iterator(tree->findMax(tree->getRoot() ) ) );
 		}
 
 		const_reverse_iterator rbegin() const{
+			if (this->size() == 0)
+				return this->rend();
 			return (const_reverse_iterator(tree->findMax(tree->getRoot() ) ) );
 		}
 
