@@ -21,6 +21,9 @@ template < class Key, class T, class Compare = std::less<Key>,
 	class Alloc = std::allocator<pair<const Key,T> > >
 class map;
 
+template < class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
+class set;
+
 template<typename T, class dstruct = vector<T> >
 class const_iterator;
 
