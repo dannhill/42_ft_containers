@@ -414,10 +414,10 @@ class RBtree{
 		{
 			if (subtree == NULL)
 				return NULL;
-			if (subtree->child[RIGHT] == NIL)
+			if (subtree->getChild(RIGHT) == NIL)
 				return subtree;
 			
-			return findMax(subtree->child[RIGHT]);
+			return findMax(subtree->getChild(RIGHT) );
 		}
 
 		static RBnode<T, Alloc>	*findMin(RBnode<T, Alloc>	*subtree)

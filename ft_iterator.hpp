@@ -113,11 +113,23 @@ class iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return (static_cast<value_type *>(this->p) != const_cast<value_type *>(static_cast<const value_type *>(cmp.p) ) );
 		}
 
-		virtual value_type &	operator*(void) const{
+		virtual const value_type &	operator*(void) const{
+			return static_cast<const value_type &>( *(this->p) );
+		}
+
+		virtual typename ft::disable_if<ft::is_same
+		<dstruct, ft::set<T> >::value, value_type &>
+		::type	operator*(void){
 			return *(this->p);
 		}
 
-		virtual value_type *	operator->(void) const{ // to substitute with pointer keyword
+		virtual const value_type *	operator->(void) const{ // to substitute with pointer keyword
+			return static_cast<const value_type *>( (this->p) );
+		}
+
+		virtual typename ft::disable_if<ft::is_same
+		<dstruct, ft::set<T> >::value, value_type *>
+		::type	operator->(void){ // to substitute with pointer keyword
 			return this->p;
 		}
 
@@ -403,12 +415,12 @@ class const_iterator : public std::iterator<std::random_access_iterator_tag, T>{
 			return (static_cast<value_type *>(this->p) != const_cast<const value_type *>(static_cast<value_type *>(cmp.p) ) );
 		}
 
-		virtual value_type &	operator*(void) const{
-			return *(this->p);
+		virtual const value_type &	operator*(void) const{
+			return static_cast<const value_type &>( *(this->p));
 		}
 
-		virtual value_type *	operator->(void) const{ // to substitute with pointer keyword
-			return this->p;
+		virtual const value_type *	operator->(void) const{ // to substitute with pointer keyword
+			return static_cast<const value_type *>( (this->p) );
 		}
 
 		const_iterator	operator++(int){
