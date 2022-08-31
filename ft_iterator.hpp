@@ -649,12 +649,19 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		// 	return;
 		// }
 
-		reverse_iterator(iterator<T, dstruct> const & cpy) : iterator<T, dstruct>(cpy){
+		reverse_iterator(iterator<T, dstruct> const & cpy) : iterator<T, dstruct>(cpy.getPoint() - static_cast<size_t>(1) ){
+			return;
+		}
+
+		reverse_iterator(reverse_iterator<T, dstruct> const & cpy) : iterator<T, dstruct>(cpy.getPoint() ){
 			return;
 		}
 
 		iterator<value_type, dstruct>	base(void) const{
-			return static_cast<iterator<value_type, dstruct> >(*this);
+			// if (this->getPoint().getEnd() == 2)
+				return iterator<value_type, dstruct>(this->getPoint() + static_cast<size_t>(1) );
+			// std::cout << "henlo\n";
+			// return static_cast<iterator<value_type, dstruct> >(*this) + 1;
 		}
 
 		virtual bool	operator==(reverse_iterator const & cmp) const{
@@ -708,7 +715,7 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		}
 
 		difference_type	operator-(reverse_iterator const & sub) const{
-			return this->p - sub.p;
+			return -(this->p - sub.p);
 		}
 
 		reverse_iterator	operator-(difference_type n) const{
@@ -734,35 +741,35 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		}
 
 		virtual bool	operator<(reverse_iterator const & cmp) const{
-			return (static_cast<value_type *>(this->p) < static_cast<value_type *>(cmp.getPoint()));
-		}
-
-		virtual bool	operator<(const_reverse_iterator<value_type, dstruct> const & cmp) const{
-			return (static_cast<value_type *>(this->p) < const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
-		}
-
-		virtual bool	operator>(reverse_iterator const & cmp) const{
 			return (static_cast<value_type *>(this->p) > static_cast<value_type *>(cmp.getPoint()));
 		}
 
-		virtual bool	operator>(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+		virtual bool	operator<(const_reverse_iterator<value_type, dstruct> const & cmp) const{
 			return (static_cast<value_type *>(this->p) > const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
+		virtual bool	operator>(reverse_iterator const & cmp) const{
+			return (static_cast<value_type *>(this->p) < static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator>(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) < const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
+		}
+
 		virtual bool	operator<=(reverse_iterator const & cmp) const{
-			return (static_cast<value_type *>(this->p) <= static_cast<value_type *>(cmp.getPoint()));
-		}
-
-		virtual bool	operator<=(const_reverse_iterator<value_type, dstruct> const & cmp) const{
-			return (static_cast<value_type *>(this->p) <= const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
-		}
-
-		virtual bool	operator>=(reverse_iterator const & cmp) const{
 			return (static_cast<value_type *>(this->p) >= static_cast<value_type *>(cmp.getPoint()));
 		}
 
-		virtual bool	operator>=(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+		virtual bool	operator<=(const_reverse_iterator<value_type, dstruct> const & cmp) const{
 			return (static_cast<value_type *>(this->p) >= const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
+		}
+
+		virtual bool	operator>=(reverse_iterator const & cmp) const{
+			return (static_cast<value_type *>(this->p) <= static_cast<value_type *>(cmp.getPoint()));
+		}
+
+		virtual bool	operator>=(const_reverse_iterator<value_type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) <= const_cast<value_type *>(static_cast<const value_type *>(cmp.getPoint()) ) );
 		}
 
 		virtual value_type &	operator[](difference_type n){
@@ -954,7 +961,7 @@ class const_reverse_iterator : public const_iterator<T, dstruct>{
 		}
 
 		difference_type	operator-(const_reverse_iterator const & sub) const{
-			return this->p - sub.p;
+			return -(this->p - sub.p);
 		}
 
 		const_reverse_iterator	operator-(difference_type n) const{
@@ -980,35 +987,35 @@ class const_reverse_iterator : public const_iterator<T, dstruct>{
 		}
 
 		virtual bool	operator<(const_reverse_iterator const & cmp) const{
-			return (static_cast<value_type *>(this->p) < static_cast<value_type *>(cmp.p));
-		}
-
-		virtual bool	operator<(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
-			return (static_cast<value_type *>(this->p) < const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
-		}
-
-		virtual bool	operator>(const_reverse_iterator const & cmp) const{
 			return (static_cast<value_type *>(this->p) > static_cast<value_type *>(cmp.p));
 		}
 
-		virtual bool	operator>(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+		virtual bool	operator<(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
 			return (static_cast<value_type *>(this->p) > const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
+		virtual bool	operator>(const_reverse_iterator const & cmp) const{
+			return (static_cast<value_type *>(this->p) < static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator>(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) < const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
+		}
+
 		virtual bool	operator<=(const_reverse_iterator const & cmp) const{
-			return (static_cast<value_type *>(this->p) <= static_cast<value_type *>(cmp.p));
-		}
-
-		virtual bool	operator<=(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
-			return (static_cast<value_type *>(this->p) <= const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
-		}
-
-		virtual bool	operator>=(const_reverse_iterator const & cmp) const{
 			return (static_cast<value_type *>(this->p) >= static_cast<value_type *>(cmp.p));
 		}
 
-		virtual bool	operator>=(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+		virtual bool	operator<=(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
 			return (static_cast<value_type *>(this->p) >= const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
+		}
+
+		virtual bool	operator>=(const_reverse_iterator const & cmp) const{
+			return (static_cast<value_type *>(this->p) <= static_cast<value_type *>(cmp.p));
+		}
+
+		virtual bool	operator>=(reverse_iterator<typename ft::remove_const<value_type>::type, dstruct> const & cmp) const{
+			return (static_cast<value_type *>(this->p) <= const_cast<const value_type *>(static_cast<value_type *>(cmp.getPoint() ) ) );
 		}
 
 		virtual value_type &	operator[](difference_type n){
@@ -1230,8 +1237,8 @@ class tpointer<value_type, class RBtree<value_type> >{
 		}
 
 		nodeType	*getNode(void) const{
-			if (this->getEnd() != 0)
-				return NULL;
+			// if (this->getEnd() != 0)
+			// 	return NULL;
 			return (this->_p);
 		}
 
@@ -1275,6 +1282,7 @@ class tpointer<value_type, class RBtree<value_type> >{
 
 		point	operator+(size_t	add) const{
 			nodeType	*tmp = this->_p;
+			nodeType	*prec = this->_p;
 			nodeType	*(*func)(nodeType *);
 			short		isBeg(this->_end == 2);
 			
@@ -1290,13 +1298,20 @@ class tpointer<value_type, class RBtree<value_type> >{
 				func = RBtree<value_type>::findNext;
 			
 			for (int i = labs(static_cast<long>(add)); tmp && i > 0; i--)
+			{
+				prec = tmp;
 				tmp = func(tmp);
+			}
 
-			return point(tmp, (tmp == NULL) + (tmp != NULL) * isBeg);
+			if (tmp)
+				prec = tmp;
+
+			return point(prec, (tmp == NULL) + (tmp != NULL) * isBeg);
 		}
 
 		point	operator-(size_t	sub) const{
 			nodeType	*tmp = this->_p;
+			nodeType	*prec = this->_p;
 			nodeType	*(*func)(nodeType *);
 			short		isEnd(this->_end == 1);
 
@@ -1312,9 +1327,15 @@ class tpointer<value_type, class RBtree<value_type> >{
 				func = RBtree<value_type>::findPrev;
 			
 			for (int i = labs(static_cast<long>(sub)); tmp && i > 0; i--)
+			{
+				prec = tmp;
 				tmp = func(tmp);
+			}
 
-			return point(tmp, (tmp == NULL) * 2 + (tmp != NULL) * isEnd);
+			if (tmp)
+				prec = tmp;
+
+			return point(prec, (tmp == NULL) * 2 + (tmp != NULL) * isEnd);
 		}
 
 		size_t	operator-(point const & sub) const{
