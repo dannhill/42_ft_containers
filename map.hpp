@@ -126,10 +126,14 @@ class map{
 		}
 
 		iterator end(){
+			if (this->size() == 0)
+				return iterator(NULL, 1);
 			return (iterator(tree->findMax(tree->getRoot() ), 1 ) );
 		}
 
 		const_iterator	end() const{
+			if (this->size() == 0)
+				return const_iterator(NULL, 1);
 			return (const_iterator(tree->findMax(tree->getRoot() ), 1) );
 		}
 
@@ -146,10 +150,14 @@ class map{
 		}
 
 		reverse_iterator rend(){
+			if (this->size() == 0)
+				return reverse_iterator(NULL, 2);
 			return (reverse_iterator(tree->findMin(tree->getRoot() ), 2) );
 		}
 
 		const_reverse_iterator rend() const{
+			if (this->size() == 0)
+				return const_reverse_iterator(NULL, 2);
 			return (const_reverse_iterator(tree->findMin(tree->getRoot() ), 2) );
 		}
 		#pragma endregion
@@ -170,14 +178,12 @@ class map{
 
 		#pragma region Element access
 		mapped_type& operator[] (const key_type& k){
-			return (this->findCompare(this->tree->getRoot(), // start from the root
-				value_type(k, mapped_type() ), // build element to insert or compare
-				true)->getVal()->second); // set insert mode to true and get value of mapped_type
+			return (this->insert(ft::make_pair(k, mapped_type() ) ).first->second);
 		}
 		#pragma endregion
 
 		#pragma region Modifiers
-		pair<iterator, bool> insert (const value_type& val){
+		pair<iterator, bool> insert (const value_type& val){//doesn't work with the const
 			nodeType	*node;
 
 			node = this->findCompare(this->tree->getRoot(), //find element
@@ -201,17 +207,26 @@ class map{
 			if ( (position != iterator() //check if position doesn't point to NULL
 				&& position.getPoint().getEnd() != 1) //check if position is not this->end()
 				&& ( position.getPoint().getEnd() == 2 || comp(*position, val) ) //if it's before begin (useless, cause it's only the case of reverse iterators)
-				&& ( (position + 1).getPoint().getEnd() == 1 || comp(val, *(position + 1) ) ) ) //if next is after last (AKA: this->end() )
+				&& ( (position + 1).getPoint().getEnd() == 1 || comp(val, *(position + 1) ) ) //if next is after last (AKA: this->end() )
+				&& comp(*position, val) )//follows order 
 			{
 				nodeType	*node = new nodeType(val);
 
 				if (this->size() <= 0)
 					this->tree->clear();
+				
+				nodeType	*curr = position.getPoint().getNode();
+				nodeType	*prev = curr;
+				for (; curr != NULL && comp( *(curr->getVal() ), val); curr = this->tree->findNext(curr) )
+					prev = curr;
+
+				if (curr && curr->getVal()->first == val.first)
+					return iterator(curr);
 
 				this->tree->RBinsert(node, //attach newly created node
-				position.getPoint().getNode(), //this position is father
-				RIGHT); // put it as the right child
-			
+				prev->getChild(RIGHT) ? curr : prev, //this position is father
+				prev->getChild(RIGHT) ? LEFT : RIGHT); // put it as the right child
+
 				this->_size++;
 
 				return iterator(node); //return iterator of the newly attached node
@@ -222,13 +237,19 @@ class map{
 
 		template <class InputIterator>
 		void insert (InputIterator first, InputIterator last){
-			iterator	hint(this->end() );
+			iterator	iend(this->end() );
+			iterator	hint(iend);
 
 			if (this->size() <= 0 && first != last)
 					this->tree->clear();
 
 			for(; first != last; first++)
-				hint = this->insert(hint, *first);
+			{
+				if (hint == iend)
+					hint = this->insert(*first).first;
+				else
+					hint = this->insert(hint, *first);
+			}
 
 			return;
 		}
@@ -296,7 +317,8 @@ class map{
 		void clear(){
 			this->tree->clear();
 
-			this->tree->RBinsert(new nodeType(value_type(0, 0)), this->tree->getRoot(), RIGHT);
+			this->tree->RBinsert(new nodeType(ft::pair<const key_type, mapped_type>(key_type(), mapped_type() ) ),
+			this->tree->getRoot(), RIGHT);
 
 			//not sure if this works
 
@@ -485,6 +507,11 @@ class map{
 
 };
 
+	template <class Key, class T, class Compare, class Alloc>
+	void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y){
+		return x.swap(y);
+	}
+
 template <class Key, class T, class Compare, class Alloc>
 class map<Key,T,Compare,Alloc>::value_compare
 {   // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
@@ -544,6 +571,7 @@ bool operator<(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Allo
 	size_t	sz = lhs.size() < rhs.size() ? lhs.size() : rhs.size();
 	// typename ft::map<Key,T,Compare,Alloc>::value_compare cmp( (Compare() ) );
 	Compare cmp;
+	std::less<T> cmp1;
 
 	typename ft::map<Key,T,Compare,Alloc>::const_iterator lbegin = lhs.begin();
 	typename ft::map<Key,T,Compare,Alloc>::const_iterator rbegin = rhs.begin();
@@ -553,9 +581,9 @@ bool operator<(const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Allo
 			return true;
 		else if (cmp((*rbegin).first, (*lbegin).first) )
 			return false;
-		else if (cmp((*lbegin).second, (*rbegin).second) )
+		else if (cmp1((*lbegin).second, (*rbegin).second) )
 			return true;
-		else if (cmp((*rbegin).second, (*lbegin).second) )
+		else if (cmp1((*rbegin).second, (*lbegin).second) )
 			return false;
 		lbegin++;
 		rbegin++;

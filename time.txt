@@ -1,0 +1,423 @@
+ft::vector assign:
+20425ms
+std::vector assign:
+6763ms
+-------------------------------
+ft::vector assign_range:
+53453ms
+std::vector assign_range:
+12635ms
+-------------------------------
+ft::vector assignment:
+18375ms
+std::vector assignment:
+13913ms
+-------------------------------
+ft::vector ctor_copy:
+8230ms
+std::vector ctor_copy:
+8087ms
+-------------------------------
+ft::vector ctor_range:
+8206ms
+std::vector ctor_range:
+8098ms
+-------------------------------
+ft::vector ctor_size:
+8583ms
+std::vector ctor_size:
+3968ms
+-------------------------------
+ft::vector dtor:
+686ms
+std::vector dtor:
+685ms
+-------------------------------
+ft::vector erase:
+12926ms
+std::vector erase:
+10074ms
+-------------------------------
+ft::vector erase_range:
+5698ms
+std::vector erase_range:
+6338ms
+-------------------------------
+ft::vector insert:
+35503ms
+std::vector insert:
+13098ms
+-------------------------------
+ft::vector insert_range:
+27608ms
+std::vector insert_range:
+6916ms
+-------------------------------
+ft::vector insert_size:
+32289ms
+std::vector insert_size:
+25708ms
+-------------------------------
+ft::vector pop_back:
+10305ms
+std::vector pop_back:
+3748ms
+-------------------------------
+ft::vector push_back:
+25298ms
+std::vector push_back:
+13994ms
+-------------------------------
+ft::vector resize:
+12456ms
+std::vector resize:
+3643ms
+-------------------------------
+./map/assignment.cpp:22:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/assignment.cpp
+In file included from ./map/clear.cpp:13:
+In file included from ./map/map_prelude.hpp:15:
+../../map.hpp:231:18: error: no matching member function for call to 'insert'
+                                hint = this->insert(hint, *first);
+                                       ~~~~~~^~~~~~
+../../map.hpp:59:10: note: in instantiation of function template specialization 'ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > >::insert<ft::iterator<ft::pair<int, int>, 
+ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here
+                        this->insert(first, last);
+                              ^
+./map/clear.cpp:28:34: note: in instantiation of function template specialization 'ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > >::map<ft::iterator<ft::pair<int, int>, ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here
+        NAMESPACE::map<int, int> m(data.begin(), data.begin() + 2500000);
+                                 ^
+../../map.hpp:198:12: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 2nd argument
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate template ignored: deduced conflicting types for parameter 'InputIterator' ('ft::iterator<ft::pair<const int, int>, RBtree<ft::pair<const int, int>, std::allocator<ft::pair<const int, int> > > >' vs. 'ft::pair<int, int>')
+                void insert (InputIterator first, InputIterator last){
+                     ^
+../../map.hpp:180:24: note: candidate function not viable: requires single argument 'val', but 2 arguments were provided
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+1 error generated.
+error compiling ./map/clear.cpp
+./map/ctor_copy.cpp:22:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/ctor_copy.cpp
+In file included from ./map/ctor_range.cpp:13:
+In file included from ./map/map_prelude.hpp:15:
+../../map.hpp:231:18: error: no matching member function for call to 'insert'
+                                hint = this->insert(hint, *first);
+                                       ~~~~~~^~~~~~
+../../map.hpp:59:10: note: in instantiation of function template specialization 'ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > >::insert<ft::iterator<ft::pair<int, int>, 
+ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here
+                        this->insert(first, last);
+                              ^
+./map/ctor_range.cpp:28:34: note: in instantiation of function template specialization 'ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > >::map<ft::iterator<ft::pair<int, int>, ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here        
+        NAMESPACE::map<int, int> m(data.begin(), data.begin() + 2500000);
+                                 ^
+../../map.hpp:198:12: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 2nd argument
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate template ignored: deduced conflicting types for parameter 'InputIterator' ('ft::iterator<ft::pair<const int, int>, RBtree<ft::pair<const int, int>, std::allocator<ft::pair<const int, int> > > >' vs. 'ft::pair<int, int>')
+                void insert (InputIterator first, InputIterator last){
+                     ^
+../../map.hpp:180:24: note: candidate function not viable: requires single argument 'val', but 2 arguments were provided
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+1 error generated.
+error compiling ./map/ctor_range.cpp
+In file included from ./map/dtor.cpp:13:
+In file included from ./map/map_prelude.hpp:15:
+../../map.hpp:231:18: error: no matching member function for call to 'insert'
+                                hint = this->insert(hint, *first);
+                                       ~~~~~~^~~~~~
+../../map.hpp:59:10: note: in instantiation of function template specialization 'ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > >::insert<ft::iterator<ft::pair<int, int>, 
+ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here
+                        this->insert(first, last);
+                              ^
+./map/dtor.cpp:29:34: note: in instantiation of function template specialization 'ft::map<int, int, 
+std::less<int>, std::allocator<ft::pair<const int, int> > >::map<ft::iterator<ft::pair<int, int>, ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here
+        NAMESPACE::map<int, int> m(data.begin(), data.begin() + 2500000);
+                                 ^
+../../map.hpp:198:12: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 2nd argument
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate template ignored: deduced conflicting types for parameter 'InputIterator' ('ft::iterator<ft::pair<const int, int>, RBtree<ft::pair<const int, int>, std::allocator<ft::pair<const int, int> > > >' vs. 'ft::pair<int, int>')
+                void insert (InputIterator first, InputIterator last){
+                     ^
+../../map.hpp:180:24: note: candidate function not viable: requires single argument 'val', but 2 arguments were provided
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+1 error generated.
+error compiling ./map/dtor.cpp
+./map/equal_range.cpp:22:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/equal_range.cpp
+./map/erase.cpp:23:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/erase.cpp
+./map/erase_range.cpp:23:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/erase_range.cpp
+./map/find.cpp:22:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/find.cpp
+ft::map index_operator:
+17702ms
+std::map index_operator:
+10176ms
+-------------------------------
+./map/insert.cpp:24:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/insert.cpp
+./map/insert_hint.cpp:30:15: error: no matching member function for call to 'insert'
+            m.insert(m.end(), NAMESPACE::make_pair(*it, rand()));
+            ~~^~~~~~
+../../map.hpp:198:12: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 2nd argument
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate template ignored: deduced conflicting types for parameter 'InputIterator' ('ft::iterator<ft::pair<const int, int>, RBtree<ft::pair<const int, int>, std::allocator<ft::pair<const int, int> > > >' vs. 'ft::pair<int, int>')
+                void insert (InputIterator first, InputIterator last){
+                     ^
+../../map.hpp:180:24: note: candidate function not viable: requires single argument 'val', but 2 arguments were provided
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+1 error generated.
+error compiling ./map/insert_hint.cpp
+In file included from ./map/insert_range.cpp:13:
+In file included from ./map/map_prelude.hpp:15:
+../../map.hpp:231:18: error: no matching member function for call to 'insert'
+                                hint = this->insert(hint, *first);
+                                       ~~~~~~^~~~~~
+./map/insert_range.cpp:30:11: note: in instantiation of function template specialization 'ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > >::insert<ft::iterator<ft::pair<int, int>, ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here   
+        m.insert(data.begin(), data.end());
+          ^
+../../map.hpp:198:12: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 2nd argument
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate template ignored: deduced conflicting types for parameter 'InputIterator' ('ft::iterator<ft::pair<const int, int>, RBtree<ft::pair<const int, int>, std::allocator<ft::pair<const int, int> > > >' vs. 'ft::pair<int, int>')
+                void insert (InputIterator first, InputIterator last){
+                     ^
+../../map.hpp:180:24: note: candidate function not viable: requires single argument 'val', but 2 arguments were provided
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+1 error generated.
+error compiling ./map/insert_range.cpp
+./map/lower_bound.cpp:22:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/lower_bound.cpp
+In file included from ./map/size.cpp:13:
+In file included from ./map/map_prelude.hpp:15:
+../../map.hpp:231:18: error: no matching member function for call to 'insert'
+                                hint = this->insert(hint, *first);
+                                       ~~~~~~^~~~~~
+../../map.hpp:59:10: note: in instantiation of function template specialization 'ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > >::insert<ft::iterator<ft::pair<int, int>, 
+ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here
+                        this->insert(first, last);
+                              ^
+./map/size.cpp:25:30: note: in instantiation of function template specialization 'ft::map<int, int, 
+std::less<int>, std::allocator<ft::pair<const int, int> > >::map<ft::iterator<ft::pair<int, int>, ft::vector<ft::pair<int, int>, std::allocator<ft::pair<int, int> > > > >' requested here
+    NAMESPACE::map<int, int> m(data.begin(), data.begin() + 2500000);
+                             ^
+../../map.hpp:198:12: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 2nd argument
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate template ignored: deduced conflicting types for parameter 'InputIterator' ('ft::iterator<ft::pair<const int, int>, RBtree<ft::pair<const int, int>, std::allocator<ft::pair<const int, int> > > >' vs. 'ft::pair<int, int>')
+                void insert (InputIterator first, InputIterator last){
+                     ^
+../../map.hpp:180:24: note: candidate function not viable: requires single argument 'val', but 2 arguments were provided
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+1 error generated.
+error compiling ./map/size.cpp
+./map/upper_bound.cpp:22:14: error: no matching member function for call to 'insert'
+        data.insert(NAMESPACE::make_pair(rand(), rand()));
+        ~~~~~^~~~~~
+../../map.hpp:180:24: note: candidate function not viable: no known conversion from 'pair<int, [...]>' to 'const pair<const ft::map<int, int, std::less<int>, std::allocator<ft::pair<const int, int> > 
+>::key_type, [...]>' for 1st argument
+                pair<iterator, bool> insert (const value_type& val){
+                                     ^
+../../map.hpp:198:12: note: candidate function not viable: requires 2 arguments, but 1 was provided 
+                iterator insert (iterator position, const value_type& val){
+                         ^
+../../map.hpp:224:8: note: candidate function template not viable: requires 2 arguments, but 1 was provided
+                void insert (InputIterator first, InputIterator last){
+                     ^
+1 error generated.
+error compiling ./map/upper_bound.cpp
+ft::set assignment:
+17651ms
+std::set assignment:
+3932ms
+-------------------------------
+ft::set clear:
+2815ms
+std::set clear:
+1750ms
+-------------------------------
+ft::set ctor_copy:
+16256ms
+std::set ctor_copy:
+5033ms
+-------------------------------
+ft::set ctor_range:
+26065ms
+std::set ctor_range:
+13908ms
+-------------------------------
+ft::set dtor:
+2013ms
+std::set dtor:
+1105ms
+-------------------------------
+ft::set equal_range:
+16831ms
+std::set equal_range:
+12803ms
+-------------------------------
+ft::set erase:
+13805ms
+std::set erase:
+14567ms
+-------------------------------
+ft::set erase_range:
+3335ms
+std::set erase_range:
+1692ms
+-------------------------------
+ft::set find:
+16009ms
+std::set find:
+11462ms
+-------------------------------
+ft::set insert:
+12691ms
+std::set insert:
+10950ms
+-------------------------------
+ft::set insert_hint:
+34005ms
+std::set insert_hint:
+1958ms
+-------------------------------
+ft::set insert_range:
+16504ms
+std::set insert_range:
+9809ms
+-------------------------------
+ft::set lower_bound:
+16246ms
+std::set lower_bound:
+11599ms
+-------------------------------
+ft::set size:
+0ms
+std::set size:
+0ms
+-------------------------------
+ft::set upper_bound:
+17443ms
+std::set upper_bound:
+11625ms
+-------------------------------

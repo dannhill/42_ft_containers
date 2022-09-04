@@ -193,17 +193,26 @@ class set{
 			if ( (position != iterator() //check if position doesn't point to NULL
 				&& position.getPoint().getEnd() != 1) //check if position is not this->end()
 				&& ( position.getPoint().getEnd() == 2 || comp(*position, val) ) //if it's before begin (useless, cause it's only the case of reverse iterators)
-				&& ( (position + 1).getPoint().getEnd() == 1 || comp(val, *(position + 1) ) ) ) //if next is after last (AKA: this->end() )
+				&& ( (position + 1).getPoint().getEnd() == 1 || comp(val, *(position + 1) ) ) //if next is after last (AKA: this->end() )
+				&& comp(*position, val) )//follows order 
 			{
 				nodeType	*node = new nodeType(val);
 
 				if (this->size() <= 0)
 					this->tree->clear();
+				
+				nodeType	*curr = position.getPoint().getNode();
+				nodeType	*prev = curr;
+				for (; curr != NULL && comp( *(curr->getVal() ), val); curr = this->tree->findNext(curr) )
+					prev = curr;
+
+				if (curr && *(curr->getVal() ) == val)
+					return iterator(curr);
 
 				this->tree->RBinsert(node, //attach newly created node
-				position.getPoint().getNode(), //this position is father
-				RIGHT); // put it as the right child
-			
+				prev->getChild(RIGHT) ? curr : prev, //this position is father
+				prev->getChild(RIGHT) ? LEFT : RIGHT); // put it as the right child
+
 				this->_size++;
 
 				return iterator(node); //return iterator of the newly attached node
@@ -214,13 +223,19 @@ class set{
 
 		template <class InputIterator>
 		void insert (InputIterator first, InputIterator last){
-			iterator	hint(this->end() );
+			iterator	iend(this->end() );
+			iterator	hint(iend);
 
 			if (this->size() <= 0 && first != last)
 					this->tree->clear();
 
 			for(; first != last; first++)
-				hint = this->insert(hint, *first);
+			{
+				if (hint == iend)
+					hint = this->insert(*first).first;
+				else
+					hint = this->insert(hint, *first);
+			}
 
 			return;
 		}
@@ -336,22 +351,10 @@ class set{
 			return static_cast<size_type>(this->find(val) != this->end() );
 		}
 
-		iterator lower_bound (const value_type& val){
-			return iterator(this->findCompare(this->tree->getRoot(),
-				val,
-				2) ); //lower_bound mode: returns node >= k
-		}
-
 		const_iterator lower_bound (const value_type& val) const{
 			return const_iterator(this->findCompare(this->tree->getRoot(),
 				val,
 				2) ); //lower_bound mode: returns node >= k
-		}
-
-		iterator upper_bound (const value_type& val){
-			return iterator(this->findCompare(this->tree->getRoot(),
-				val,
-				3) ); //upper_bound mode: returns node > k
 		}
 
 		const_iterator upper_bound (const value_type& val) const{
@@ -363,13 +366,6 @@ class set{
 		pair<const_iterator,const_iterator> equal_range (const value_type& val) const{
 			const_iterator	res = lower_bound(val);
 			const_iterator	res2 = upper_bound(val);
-
-			return ft::make_pair(res, res2);
-		}
-
-		pair<iterator,iterator>             equal_range (const value_type& val){
-			iterator res = lower_bound(val);
-			iterator res2 = upper_bound(val);
 
 			return ft::make_pair(res, res2);
 		}

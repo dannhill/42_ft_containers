@@ -13,8 +13,8 @@
 #define NIL   NULL
 #define LEFT  0
 #define RIGHT 1
-#define left  child[LEFT]
-#define right child[RIGHT]
+// #define left  child[LEFT]
+// #define right child[RIGHT]
 
 enum color_e { BLACK, RED, DBLACK};
 typedef	enum color_e color_t;
@@ -141,7 +141,7 @@ class RBtree{
 			Parent->parent = Sib;
 			Sib->parent = Gran;
 			if (Gran != NULL)
-				Gran->child[Parent == Gran->right ? RIGHT : LEFT] = Sib;
+				Gran->child[Parent == Gran->child[RIGHT] ? RIGHT : LEFT] = Sib;
 			else
 				Tree->root = Sib;
 			return Sib;
@@ -173,8 +173,8 @@ class RBtree{
 			RBnode<T, Alloc>	*Unc;
 
 			New->color = RED;
-			New->left  = NIL;
-			New->right = NIL;
+			New->child[LEFT] = NIL;
+			New->child[RIGHT] = NIL;
 			New->parent = Parent;
 
 			Parent->child[dir] = New;
@@ -452,7 +452,7 @@ class RBtree{
 		}
 
 		static inline short	childDir(RBnode<T, Alloc> *New){
-			if (New == New->parent->right)
+			if (New == New->parent->child[RIGHT])
 				return RIGHT;
 			else
 				return LEFT;

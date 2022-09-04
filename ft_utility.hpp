@@ -34,6 +34,14 @@ struct pair{
 			return (*this);
 		}
 
+		operator pair<const T1, T2>(void){
+			return ft::pair<const T1, T2>(first, second);
+		}
+
+		operator pair<typename ft::remove_const<T1>::type, T2>(void){
+			return ft::pair<typename ft::remove_const<T1>::type, T2>(first, second);
+		}
+
 		first_type	first;
 		second_type	second;
 };
