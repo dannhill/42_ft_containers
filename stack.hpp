@@ -1,4 +1,6 @@
-#include "vector.hpp"
+#ifndef STACK_HPP
+# define STACK_HPP
+# include "vector.hpp"
 
 namespace ft
 {
@@ -118,3 +120,5 @@ bool operator>= (const stack<U,Cont>& lhs, const stack<U,Cont>& rhs){
 }
 
 }
+
+#endif

@@ -660,7 +660,6 @@ class	reverse_iterator : public iterator<T, dstruct>{
 		iterator<value_type, dstruct>	base(void) const{
 			// if (this->getPoint().getEnd() == 2)
 				return iterator<value_type, dstruct>(this->getPoint() + static_cast<size_t>(1) );
-			// std::cout << "henlo\n";
 			// return static_cast<iterator<value_type, dstruct> >(*this) + 1;
 		}
 
@@ -894,16 +893,20 @@ class const_reverse_iterator : public const_iterator<T, dstruct>{
 			return;
 		}
 
-		const_reverse_iterator(tpointer<value_type, dstruct> point) : const_iterator<T, dstruct>(point){
+		const_reverse_iterator(tpointer<value_type, dstruct> point) : const_iterator<value_type, dstruct>(point){
 			
 			return;
 		}
 
-		const_reverse_iterator(const_iterator<T, dstruct> & ite) : const_iterator<T, dstruct>(ite){
+		const_reverse_iterator(const const_iterator<T, dstruct> & ite) : const_iterator<T, dstruct>(ite.getPoint() - static_cast<size_t>(1)){
 			return;
 		}
 
-		const_reverse_iterator(iterator<T, dstruct> & ite) : const_iterator<T, dstruct>(ite){
+		const_reverse_iterator(const iterator<T, dstruct> & ite) : const_iterator<T, dstruct>(ite.getPoint() - static_cast<size_t>(1)){
+			return;
+		}
+
+		const_reverse_iterator(const const_reverse_iterator<T, dstruct> & cpy) : const_iterator<T, dstruct>(cpy.getPoint()){
 			return;
 		}
 
@@ -919,7 +922,9 @@ class const_reverse_iterator : public const_iterator<T, dstruct>{
 
 
 		iterator<value_type, dstruct>	base(void) const{
-			return static_cast<const_iterator<value_type, dstruct> >(*this) + 1;
+			// if (this->getPoint().getEnd() == 2)
+				return const_iterator<value_type, dstruct>(this->getPoint() + static_cast<size_t>(1) );
+			// return static_cast<iterator<value_type, dstruct> >(*this) + 1;
 		}
 
 		virtual bool	operator==(const_reverse_iterator const & cmp) const{
